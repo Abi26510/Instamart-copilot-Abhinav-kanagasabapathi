@@ -6,12 +6,15 @@ An end-to-end interactive visual guide, analytics studio, and real-time executio
 suite for quick-commerce data quality, customer intelligence, ticket triage,
 and autonomous ReAct refund operations.
 
-Color Palette Theme:
-  - Deep Indigo / Slate Blue: #425B9A
-  - Cerulean / Sky Blue:      #76C0EC
-  - Warm Vanilla / Cream:     #FFF6DC
-  - Soft Coral / Pink-Red:    #FF95A5
-Design Aesthetic: Isomorphic / 2.5D Isometric Retro-Modern Tech Dashboard
+High-Contrast Executive Color Palette:
+  - Slate Charcoal (Headings & Shadows):  #0F172A (Deep Slate 900)
+  - Deep Royal Blue (Primary Brand):       #1E40AF / #2563EB (Electric Blue)
+  - Emerald Teal (Success / Verification): #059669 (Emerald 600)
+  - Coral Rose (Priority & Alerts):       #E11D48 (Rose 600)
+  - Amber Gold (Mid Tiers & Warmth):       #D97706 (Amber 600)
+  - Clean Canvas Background:              #F8FAFC (Slate 50)
+  - Card Surface (Maximum Contrast):      #FFFFFF (Pure White)
+Design Aesthetic: High-Contrast Isomorphic / 2.5D Retro-Modern Tech Dashboard
 ================================================================================
 """
 
@@ -37,175 +40,256 @@ import triage
 # Streamlit Page Configuration
 # ------------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Instamart Copilot | AI Intelligence Suite",
+    page_title="Instamart Copilot | AI Operations Suite",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ------------------------------------------------------------------------------
-# Custom CSS: Isomorphic Design System with Target Color Palette
-# Palette: #425B9A (Deep Slate), #76C0EC (Sky Blue), #FFF6DC (Ivory), #FF95A5 (Coral)
+# Custom CSS: High-Contrast Isomorphic Design System
 # ------------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
-    --primary-indigo: #425B9A;
-    --sky-blue: #76C0EC;
-    --warm-cream: #FFF6DC;
-    --coral-pink: #FF95A5;
-    --dark-slate: #1C2438;
+    --brand-dark: #0F172A;
+    --brand-blue: #2563EB;
+    --brand-navy: #1E3A8A;
+    --brand-emerald: #059669;
+    --brand-rose: #E11D48;
+    --brand-amber: #D97706;
+    --bg-canvas: #F8FAFC;
     --card-bg: #FFFFFF;
-    --card-surface: #F8F9FE;
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
 }
 
-html, body, [class*="css"] {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--dark-slate);
+/* Universal Typography & High-Contrast Overrides */
+html, body, [class*="css"], .stApp {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background-color: var(--bg-canvas) !important;
+    color: var(--text-primary) !important;
 }
 
-/* Background canvas */
+/* Force dark, crisp readable text on all regular elements */
+p, span, div, li, td, th, label, [data-testid="stMarkdownContainer"] p {
+    color: var(--text-primary) !important;
+}
+
+h1, h2, h3, h4, h5, h6, strong, b {
+    color: var(--brand-dark) !important;
+    font-weight: 800 !important;
+}
+
+/* Background canvas grid pattern */
 .stApp {
-    background-color: #FAF8F2;
+    background-color: #F8FAFC !important;
     background-image: 
-        radial-gradient(#425B9A15 1px, transparent 1px),
-        radial-gradient(#76C0EC20 1px, #FAF8F2 1px);
-    background-size: 24px 24px;
-    background-position: 0 0, 12px 12px;
+        radial-gradient(#CBD5E1 1px, transparent 1px),
+        radial-gradient(#E2E8F0 1px, #F8FAFC 1px) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0, 10px 10px !important;
 }
 
-/* Isomorphic elevated card */
+/* Isomorphic elevated card with 2.5D solid shadow */
 .iso-card {
-    background: #FFFFFF;
-    border: 2px solid #425B9A;
-    border-radius: 14px;
-    box-shadow: 6px 6px 0px #425B9A;
-    padding: 24px;
-    margin-bottom: 24px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #FFFFFF !important;
+    border: 2px solid #0F172A !important;
+    border-radius: 14px !important;
+    box-shadow: 5px 5px 0px #0F172A !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 .iso-card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: 9px 9px 0px #425B9A;
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 7px 7px 0px #0F172A !important;
 }
 
-/* Isomorphic Banner */
+.iso-card h3, .iso-card h4 {
+    color: #0F172A !important;
+    margin-top: 4px !important;
+}
+
+.iso-card p, .iso-card li {
+    color: #334155 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+}
+
+/* Isomorphic Hero Banner (Dark with bright white text) */
 .iso-hero {
-    background: linear-gradient(135deg, #425B9A 0%, #2A3C6B 100%);
-    border: 3px solid #1C2438;
-    border-radius: 16px;
-    box-shadow: 8px 8px 0px #1C2438;
-    padding: 32px 36px;
-    color: #FFFFFF;
-    margin-bottom: 28px;
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%) !important;
+    border: 3px solid #0F172A !important;
+    border-radius: 16px !important;
+    box-shadow: 6px 6px 0px #2563EB !important;
+    padding: 30px 34px !important;
+    color: #FFFFFF !important;
+    margin-bottom: 24px !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .iso-hero h1 {
-    color: #FFF6DC;
-    font-weight: 800;
-    font-size: 2.2rem;
-    margin-bottom: 8px;
-    text-shadow: 2px 2px 0px #1C2438;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    font-size: 2.1rem !important;
+    margin-bottom: 8px !important;
+    text-shadow: 2px 2px 0px #0F172A !important;
 }
 
-.iso-hero p {
-    color: #E2E8F8;
-    font-size: 1.05rem;
-    max-width: 800px;
-    margin-bottom: 0;
+.iso-hero p, .iso-hero span {
+    color: #F1F5F9 !important;
+    font-size: 1.02rem !important;
+    max-width: 820px !important;
+    margin-bottom: 0 !important;
 }
 
 /* Isomorphic KPI box */
 .iso-metric {
-    background: #FFF6DC;
-    border: 2px solid #425B9A;
-    border-radius: 12px;
-    box-shadow: 4px 4px 0px #425B9A;
-    padding: 16px 20px;
-    text-align: center;
-    transition: all 0.2s ease;
+    background: #FFFFFF !important;
+    border: 2px solid #0F172A !important;
+    border-radius: 12px !important;
+    box-shadow: 4px 4px 0px #2563EB !important;
+    padding: 16px 18px !important;
+    text-align: center !important;
+    transition: all 0.15s ease !important;
 }
 
 .iso-metric:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px #425B9A;
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 6px 6px 0px #2563EB !important;
 }
 
 .iso-metric-val {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #425B9A;
-    line-height: 1.1;
-    margin-bottom: 4px;
+    font-size: 1.8rem !important;
+    font-weight: 800 !important;
+    color: #1E3A8A !important;
+    line-height: 1.1 !important;
+    margin-bottom: 4px !important;
 }
 
 .iso-metric-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #55627E;
-}
-
-/* Badges */
-.iso-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    border-radius: 6px;
-    border: 1.5px solid #425B9A;
-    box-shadow: 2px 2px 0px #425B9A;
-    margin-right: 6px;
-    margin-bottom: 4px;
-}
-
-.badge-cream { background: #FFF6DC; color: #425B9A; }
-.badge-pink  { background: #FF95A5; color: #1C2438; }
-.badge-blue  { background: #76C0EC; color: #1C2438; }
-.badge-navy  { background: #425B9A; color: #FFF6DC; }
-
-/* Buttons styling */
-.stButton > button {
-    background: #425B9A !important;
-    color: #FFF6DC !important;
+    font-size: 0.82rem !important;
     font-weight: 700 !important;
-    border: 2px solid #1C2438 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #475569 !important;
+}
+
+/* High-Contrast Badges */
+.iso-badge {
+    display: inline-block !important;
+    padding: 4px 12px !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    margin-right: 6px !important;
+    margin-bottom: 4px !important;
+}
+
+.badge-blue {
+    background: #EFF6FF !important;
+    color: #1E40AF !important;
+    border: 1.5px solid #3B82F6 !important;
+    box-shadow: 2px 2px 0px #1E40AF !important;
+}
+
+.badge-emerald {
+    background: #ECFDF5 !important;
+    color: #065F46 !important;
+    border: 1.5px solid #10B981 !important;
+    box-shadow: 2px 2px 0px #065F46 !important;
+}
+
+.badge-rose {
+    background: #FFF1F2 !important;
+    color: #9F1239 !important;
+    border: 1.5px solid #F43F5E !important;
+    box-shadow: 2px 2px 0px #9F1239 !important;
+}
+
+.badge-dark {
+    background: #0F172A !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid #0F172A !important;
+    box-shadow: 2px 2px 0px #2563EB !important;
+}
+
+/* Action Buttons */
+.stButton > button {
+    background: #2563EB !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border: 2px solid #0F172A !important;
     border-radius: 8px !important;
-    box-shadow: 4px 4px 0px #1C2438 !important;
+    box-shadow: 3px 3px 0px #0F172A !important;
     transition: all 0.15s ease !important;
     padding: 8px 20px !important;
 }
 
 .stButton > button:hover {
     transform: translate(-2px, -2px) !important;
-    box-shadow: 6px 6px 0px #1C2438 !important;
-    background: #34487C !important;
+    box-shadow: 5px 5px 0px #0F172A !important;
+    background: #1D4ED8 !important;
+    color: #FFFFFF !important;
 }
 
 .stButton > button:active {
     transform: translate(2px, 2px) !important;
-    box-shadow: 2px 2px 0px #1C2438 !important;
+    box-shadow: 1px 1px 0px #0F172A !important;
 }
 
-/* Custom code block styling */
+/* Inputs, Textareas, Selectboxes */
+input, textarea, select, [data-baseweb="select"] {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 2px solid #94A3B8 !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+}
+
+input:focus, textarea:focus {
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
+    border-right: 2px solid #CBD5E1 !important;
+    box-shadow: 4px 0px 0px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-testid="stSidebar"] * {
+    color: #0F172A !important;
+}
+
+/* Native Code Blocks */
 pre, code {
     font-family: 'JetBrains Mono', monospace !important;
-    background-color: #232D42 !important;
-    color: #FFF6DC !important;
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
     border-radius: 6px !important;
 }
 
-/* Sidebar styling */
-[data-testid="stSidebar"] {
-    background-color: #FFFFFF !important;
-    border-right: 2px solid #425B9A !important;
-    box-shadow: 4px 0px 0px #425B9A20 !important;
+pre code, pre span {
+    color: #F8FAFC !important;
+}
+
+/* Metric Widgets */
+[data-testid="stMetricValue"] {
+    color: #1E3A8A !important;
+    font-weight: 800 !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #475569 !important;
+    font-weight: 700 !important;
 }
 </style>
 """
@@ -260,65 +344,62 @@ def load_retention_list():
     return pd.DataFrame()
 
 # ------------------------------------------------------------------------------
-# SVG Isomorphic Graphics Generator
+# SVG Isomorphic Graphics Generator (High-Contrast Theme)
 # ------------------------------------------------------------------------------
 def render_isomorphic_header_svg():
-    """Renders a clean 2.5D Isometric geometric graphic with the project palette."""
+    """Renders a 2.5D Isometric geometric graphic with crisp, high-contrast colors."""
     return """
-    <svg width="100%" height="140" viewBox="0 0 900 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Background Grid Plane -->
-      <g opacity="0.4">
-        <path d="M50 70 L450 10 L850 70 L450 130 Z" fill="#76C0EC" fill-opacity="0.1" stroke="#76C0EC" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <line x1="150" y1="55" x2="550" y2="115" stroke="#76C0EC" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="250" y1="40" x2="650" y2="100" stroke="#76C0EC" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="350" y1="25" x2="750" y2="85" stroke="#76C0EC" stroke-width="1" stroke-dasharray="2 4"/>
+    <svg width="100%" height="135" viewBox="0 0 900 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Ground Isometric Grid -->
+      <g opacity="0.35">
+        <path d="M50 65 L450 10 L850 65 L450 120 Z" fill="#2563EB" fill-opacity="0.06" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <line x1="150" y1="50" x2="550" y2="105" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="250" y1="35" x2="650" y2="90" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="350" y1="20" x2="750" y2="75" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
       </g>
       
       <!-- Cube 1: Data Pipeline (Part A) -->
-      <g transform="translate(140, 45)">
-        <!-- Top Face -->
-        <polygon points="0,0 35,-20 70,0 35,20" fill="#76C0EC" stroke="#425B9A" stroke-width="2"/>
-        <!-- Left Face -->
-        <polygon points="0,0 35,20 35,60 0,40" fill="#425B9A" stroke="#1C2438" stroke-width="2"/>
-        <!-- Right Face -->
-        <polygon points="35,20 70,0 70,40 35,60" fill="#2E406F" stroke="#1C2438" stroke-width="2"/>
-        <text x="35" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFF6DC" text-anchor="middle">DATA</text>
+      <g transform="translate(140, 40)">
+        <polygon points="0,0 35,-20 70,0 35,20" fill="#3B82F6" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="0,0 35,20 35,55 0,35" fill="#1E40AF" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="35,20 70,0 70,35 35,55" fill="#172554" stroke="#0F172A" stroke-width="2"/>
+        <text x="35" y="4" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">DATA</text>
       </g>
 
-      <!-- Isometric Conduit 1 -> 2 -->
-      <path d="M210 75 L320 75" stroke="#FF95A5" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="265" cy="75" r="4" fill="#FF95A5"/>
+      <!-- Conduit 1 -> 2 -->
+      <path d="M210 65 L320 65" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
+      <circle cx="265" cy="65" r="4" fill="#2563EB"/>
 
       <!-- Cube 2: Intelligence & RFM (Part B) -->
-      <g transform="translate(320, 30)">
-        <polygon points="0,0 40,-22 80,0 40,22" fill="#FFF6DC" stroke="#425B9A" stroke-width="2"/>
-        <polygon points="0,0 40,22 40,68 0,46" fill="#76C0EC" stroke="#1C2438" stroke-width="2"/>
-        <polygon points="40,22 80,0 80,46 40,68" fill="#589BCE" stroke="#1C2438" stroke-width="2"/>
-        <text x="40" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#425B9A" text-anchor="middle">RFM ML</text>
+      <g transform="translate(320, 25)">
+        <polygon points="0,0 40,-22 80,0 40,22" fill="#10B981" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="0,0 40,22 40,65 0,43" fill="#059669" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="40,22 80,0 80,43 40,65" fill="#064E3B" stroke="#0F172A" stroke-width="2"/>
+        <text x="40" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">RFM ML</text>
       </g>
 
-      <!-- Isometric Conduit 2 -> 3 -->
-      <path d="M400 65 L510 65" stroke="#76C0EC" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="455" cy="65" r="4" fill="#76C0EC"/>
+      <!-- Conduit 2 -> 3 -->
+      <path d="M400 55 L510 55" stroke="#E11D48" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
+      <circle cx="455" cy="55" r="4" fill="#E11D48"/>
 
       <!-- Cube 3: Triage Guardrails (Part C) -->
-      <g transform="translate(510, 40)">
-        <polygon points="0,0 36,-20 72,0 36,20" fill="#FF95A5" stroke="#425B9A" stroke-width="2"/>
-        <polygon points="0,0 36,20 36,60 0,40" fill="#DE687A" stroke="#1C2438" stroke-width="2"/>
-        <polygon points="36,20 72,0 72,40 36,60" fill="#BA495B" stroke="#1C2438" stroke-width="2"/>
+      <g transform="translate(510, 35)">
+        <polygon points="0,0 36,-20 72,0 36,20" fill="#F43F5E" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="0,0 36,20 36,55 0,35" fill="#E11D48" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="36,20 72,0 72,35 36,55" fill="#881337" stroke="#0F172A" stroke-width="2"/>
         <text x="36" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">TRIAGE</text>
       </g>
 
-      <!-- Isometric Conduit 3 -> 4 -->
-      <path d="M582 70 L690 70" stroke="#FFF6DC" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="636" cy="70" r="4" fill="#FFF6DC"/>
+      <!-- Conduit 3 -> 4 -->
+      <path d="M582 62 L690 62" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
+      <circle cx="636" cy="62" r="4" fill="#7C3AED"/>
 
       <!-- Cube 4: ReAct Agent & RAG (Part D) -->
-      <g transform="translate(690, 25)">
-        <polygon points="0,0 42,-24 84,0 42,24" fill="#76C0EC" stroke="#425B9A" stroke-width="2"/>
-        <polygon points="0,0 42,24 42,75 0,51" fill="#425B9A" stroke="#1C2438" stroke-width="2"/>
-        <polygon points="42,24 84,0 84,51 42,75" fill="#2E406F" stroke="#1C2438" stroke-width="2"/>
-        <text x="42" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFF6DC" text-anchor="middle">AGENT</text>
+      <g transform="translate(690, 20)">
+        <polygon points="0,0 42,-24 84,0 42,24" fill="#8B5CF6" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="0,0 42,24 42,70 0,46" fill="#7C3AED" stroke="#0F172A" stroke-width="2"/>
+        <polygon points="42,24 84,0 84,46 42,70" fill="#4C1D95" stroke="#0F172A" stroke-width="2"/>
+        <text x="42" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">AGENT</text>
       </g>
     </svg>
     """
@@ -328,17 +409,17 @@ def render_isomorphic_header_svg():
 # ------------------------------------------------------------------------------
 with st.sidebar:
     st.markdown("""
-    <div style="text-align: center; padding: 12px 0 20px 0;">
+    <div style="text-align: center; padding: 12px 0 16px 0;">
         <div style="font-size: 2.2rem;">📦 ⚡ 🤖</div>
-        <h2 style="color: #425B9A; font-weight: 800; margin: 4px 0 0 0; letter-spacing: -0.02em;">INSTAMART</h2>
-        <div style="font-size: 0.85rem; font-weight: 700; color: #FF95A5; text-transform: uppercase; letter-spacing: 0.1em;">Copilot Intelligence</div>
+        <h2 style="color: #0F172A; font-weight: 800; margin: 4px 0 0 0; letter-spacing: -0.02em;">INSTAMART</h2>
+        <div style="font-size: 0.8rem; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.1em;">AI Operations Platform</div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<hr style='margin: 8px 0 16px 0; border: 1px solid #425B9A25;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 4px 0 16px 0; border: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
 
     app_mode = st.radio(
-        "NAVIGATION MODULES",
+        "OPERATIONAL MODULES",
         [
             "🏛️ Mission Control & Visual Guide",
             "🔍 Part A: Data Pipeline & SQL Studio",
@@ -350,18 +431,18 @@ with st.sidebar:
         index=0
     )
 
-    st.markdown("<hr style='margin: 16px 0; border: 1px solid #425B9A25;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 16px 0; border: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background: #FFF6DC; border: 1.5px solid #425B9A; border-radius: 8px; padding: 12px; box-shadow: 3px 3px 0px #425B9A;">
-        <div style="font-size: 0.75rem; font-weight: 700; color: #425B9A; margin-bottom: 4px;">ACTIVE SYSTEM PALETTE</div>
-        <div style="display: flex; gap: 6px; align-items: center;">
-            <div style="width: 20px; height: 20px; border-radius: 4px; background: #425B9A; border: 1px solid #1C2438;" title="#425B9A Deep Indigo"></div>
-            <div style="width: 20px; height: 20px; border-radius: 4px; background: #76C0EC; border: 1px solid #1C2438;" title="#76C0EC Sky Blue"></div>
-            <div style="width: 20px; height: 20px; border-radius: 4px; background: #FFF6DC; border: 1px solid #1C2438;" title="#FFF6DC Warm Ivory"></div>
-            <div style="width: 20px; height: 20px; border-radius: 4px; background: #FF95A5; border: 1px solid #1C2438;" title="#FF95A5 Coral Pink"></div>
+    <div style="background: #FFFFFF; border: 2px solid #0F172A; border-radius: 8px; padding: 12px; box-shadow: 3px 3px 0px #0F172A;">
+        <div style="font-size: 0.72rem; font-weight: 800; color: #0F172A; margin-bottom: 6px; text-transform: uppercase;">ACCESSIBILITY PALETTE</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="width: 22px; height: 22px; border-radius: 4px; background: #0F172A; border: 1px solid #0F172A;" title="#0F172A Slate 900"></div>
+            <div style="width: 22px; height: 22px; border-radius: 4px; background: #2563EB; border: 1px solid #0F172A;" title="#2563EB Electric Blue"></div>
+            <div style="width: 22px; height: 22px; border-radius: 4px; background: #059669; border: 1px solid #0F172A;" title="#059669 Emerald 600"></div>
+            <div style="width: 22px; height: 22px; border-radius: 4px; background: #E11D48; border: 1px solid #0F172A;" title="#E11D48 Rose 600"></div>
         </div>
-        <div style="font-size: 0.7rem; color: #55627E; margin-top: 6px;">Status: <strong>All Pipelines Online</strong></div>
+        <div style="font-size: 0.75rem; color: #334155; margin-top: 8px; font-weight: 600;">System: <strong>WCAG AAA High Contrast</strong></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -372,10 +453,10 @@ with st.sidebar:
 if app_mode == "🏛️ Mission Control & Visual Guide":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-pink">OPERATIONAL INTELLIGENCE</span>
-        <span class="iso-badge badge-blue">ENTERPRISE COPILOT</span>
+        <span class="iso-badge badge-rose">ENTERPRISE PLATFORM</span>
+        <span class="iso-badge badge-blue">VERSION 2.0</span>
         <h1>Instamart Customer Intelligence & Autonomous Operations</h1>
-        <p>An integrated, fault-tolerant platform delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
+        <p>A mission-critical quick-commerce operations suite delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -384,11 +465,23 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     st.markdown("### 📐 Isomorphic Architecture Pipeline")
     st.markdown(render_isomorphic_header_svg(), unsafe_allow_html=True)
     st.markdown("""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 12px; text-align: center;">
-        <div><strong>Part A: Data Foundation</strong><br><span style="font-size: 0.85rem; color: #55627E;">Dirty raw audit, clean exports, SQLite instamart.db</span></div>
-        <div><strong>Part B: Customer Modeling</strong><br><span style="font-size: 0.85rem; color: #55627E;">RFM K-Means clustering, PCA, lapse predictive AI</span></div>
-        <div><strong>Part C: Ticket Triage</strong><br><span style="font-size: 0.85rem; color: #55627E;">Regex PII redaction, token budgets, queue routing</span></div>
-        <div><strong>Part D: Policy ReAct Agent</strong><br><span style="font-size: 0.85rem; color: #55627E;">15-chunk TF-IDF RAG, SQLite tools, state checkpoints</span></div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 14px; text-align: center;">
+        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
+            <strong style="color: #1E40AF;">Part A: Data Foundation</strong><br>
+            <span style="font-size: 0.85rem; color: #475569;">Dirty raw audit, clean exports, SQLite instamart.db</span>
+        </div>
+        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
+            <strong style="color: #065F46;">Part B: Customer Modeling</strong><br>
+            <span style="font-size: 0.85rem; color: #475569;">RFM K-Means clustering, PCA, lapse predictive AI</span>
+        </div>
+        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
+            <strong style="color: #9F1239;">Part C: Ticket Triage</strong><br>
+            <span style="font-size: 0.85rem; color: #475569;">Regex PII redaction, token budgets, queue routing</span>
+        </div>
+        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
+            <strong style="color: #5B21B6;">Part D: ReAct Agent</strong><br>
+            <span style="font-size: 0.85rem; color: #475569;">15-chunk TF-IDF RAG, SQLite tools, state checkpoints</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -426,22 +519,22 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     with m5:
         st.markdown("""
         <div class="iso-metric">
-            <div class="iso-metric-val">4 Stages</div>
-            <div class="iso-metric-label">Zero-Data Leakage</div>
+            <div class="iso-metric-val">0.8090</div>
+            <div class="iso-metric-label">Lapse Model Recall</div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
 
     # Visual Guide Cards (2x2 grid)
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("""
         <div class="iso-card">
-            <span class="iso-badge badge-blue">PART A</span>
-            <h3 style="color: #425B9A; margin-top: 8px;">Relational Analytics & Auditing</h3>
+            <span class="iso-badge badge-blue">PART A PIPELINE</span>
+            <h3>Relational Analytics & Data Auditing</h3>
             <p>Audits 13,084 raw orders and 1,200 customers, removing 119 exact duplicates, standardizing 24 raw city spellings into 6 metro hubs, imputing missing ages, and validating 7 analytical SQL queries against <code>data/instamart.db</code>.</p>
-            <ul style="font-size: 0.9rem; color: #3A4664;">
+            <ul>
                 <li><strong>Bengaluru / Electronics</strong>: Top revenue category (INR 233,909.45).</li>
                 <li><strong>Rank Discrepancies</strong>: 8 tied rows between <code>RANK()</code> and <code>ROW_NUMBER()</code>.</li>
                 <li><strong>Cumulative Revenue</strong>: Exact tracking over 183 operational days.</li>
@@ -451,10 +544,10 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     with c2:
         st.markdown("""
         <div class="iso-card">
-            <span class="iso-badge badge-cream">PART B</span>
-            <h3 style="color: #425B9A; margin-top: 8px;">RFM Clustering & Lapse AI</h3>
+            <span class="iso-badge badge-emerald">PART B PIPELINE</span>
+            <h3>RFM Clustering & Lapse AI</h3>
             <p>Builds customer behavioral snapshot at 2025-10-01 across 1,175 customers. Fits K-Means (K=4, inertia 743.1, silhouette 0.526) with 2D PCA projection, and trains leakage-free lapse models.</p>
-            <ul style="font-size: 0.9rem; color: #3A4664;">
+            <ul>
                 <li><strong>Premium Champions</strong>: 138 accounts spending average INR 7,129.70.</li>
                 <li><strong>Class Balancing</strong>: Boosts test recall by +15.7pp (from 0.6517 to 0.8090).</li>
                 <li><strong>Retention Priority</strong>: Top 10 high-value churn targets flagged.</li>
@@ -466,10 +559,10 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     with c3:
         st.markdown("""
         <div class="iso-card">
-            <span class="iso-badge badge-pink">PART C</span>
-            <h3 style="color: #425B9A; margin-top: 8px;">Privacy Guardrails & Triage</h3>
+            <span class="iso-badge badge-rose">PART C PIPELINE</span>
+            <h3>Privacy Guardrails & Smart Triage</h3>
             <p>Sanitizes 164 customer tickets via strict regex substitution (email, phone, order IDs), enforces input length bounds (drops 4 empty and 4 oversized >400 token tickets), and routes tickets using Part B customer tiers.</p>
-            <ul style="font-size: 0.9rem; color: #3A4664;">
+            <ul>
                 <li><strong>PII Neutralized</strong>: 278 substitutions with 0 remaining.</li>
                 <li><strong>Few-Shot Superiority</strong>: 100% accuracy vs 85.7% for zero-shot.</li>
                 <li><strong>Budget Safety</strong>: Demonstrates hard cap stop at 6,000 tokens.</li>
@@ -479,10 +572,10 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     with c4:
         st.markdown("""
         <div class="iso-card">
-            <span class="iso-badge badge-navy">PART D</span>
-            <h3 style="color: #425B9A; margin-top: 8px;">RAG Grounding & ReAct Agent</h3>
+            <span class="iso-badge badge-dark">PART D PIPELINE</span>
+            <h3>RAG Grounding & ReAct Agent</h3>
             <p>Deploys a 40-word / 10-overlap TF-IDF retrieval system over 5 operational policies, powering an autonomous ReAct refund agent with 5 live database and policy tools.</p>
-            <ul style="font-size: 0.9rem; color: #3A4664;">
+            <ul>
                 <li><strong>Grounding Perfection</strong>: 12/12 doc hits, 12/12 fact hits, 2/2 unanswerables.</li>
                 <li><strong>Automated Decisions</strong>: Auto-refunds &le;INR 1000, escalates large claims.</li>
                 <li><strong>Resumability</strong>: State checkpointing allows seamless recovery after crash.</li>
@@ -640,20 +733,20 @@ ORDER BY day;"""
                 if "Q2" in q_preset_name and "revenue" in res_df.columns:
                     fig = px.bar(
                         res_df, x="city", y="revenue", color="category",
-                        title="Revenue by City and Category",
+                        title="Revenue by City and Category (INR)",
                         barmode="group",
-                        color_discrete_sequence=["#425B9A", "#76C0EC", "#FF95A5", "#F5A623", "#2EC4B6"]
+                        color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706", "#7C3AED"]
                     )
-                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#FAF8F2")
+                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
                     st.plotly_chart(fig, use_container_width=True)
 
                 elif "Q7" in q_preset_name and "cumulative_revenue" in res_df.columns:
                     fig = px.line(
                         res_df, x="day", y="cumulative_revenue",
                         title="Cumulative Operational Revenue (INR)",
-                        color_discrete_sequence=["#425B9A"]
+                        color_discrete_sequence=["#2563EB"]
                     )
-                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#FAF8F2")
+                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
                     st.plotly_chart(fig, use_container_width=True)
 
             except Exception as e:
@@ -667,7 +760,7 @@ ORDER BY day;"""
 elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-cream">PART B MODELING</span>
+        <span class="iso-badge badge-emerald">PART B MODELING</span>
         <h1>Customer RFM Clustering & Predictive Lapse AI</h1>
         <p>Explore 3D RFM behavioral spaces, identify VIP Champions, and predict customer churn using balanced machine learning models without lookahead leakage.</p>
     </div>
@@ -680,17 +773,16 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
     with tab1:
         st.markdown('<div class="iso-card">', unsafe_allow_html=True)
         st.markdown("### 🧊 3D Isometric Customer Clustering (Recency × Frequency × Monetary)")
-        st.markdown("Rotate and explore the customer behavioral feature space in 3D.")
+        st.markdown("Rotate and explore the customer behavioral feature space in 3D with high-contrast cluster coloring.")
 
         if not df_seg.empty:
             # 3D Scatter Plot with Isometric Perspective
             palette_map = {
-                "At-Risk / Lapsed": "#FF95A5",
-                "Champions": "#425B9A",
-                "Promising": "#76C0EC",
-                "Occasional Buyers": "#FFD166"
+                "At-Risk / Lapsed": "#E11D48",
+                "Champions": "#2563EB",
+                "Promising": "#059669",
+                "Occasional Buyers": "#D97706"
             }
-            colors = [palette_map.get(s, "#425B9A") for s in df_seg["segment_name"]]
 
             fig_3d = go.Figure(data=[go.Scatter3d(
                 x=df_seg["recency"],
@@ -700,7 +792,7 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                 marker=dict(
                     size=4.5,
                     color=df_seg["cluster"],
-                    colorscale=[[0, '#425B9A'], [0.33, '#76C0EC'], [0.66, '#FF95A5'], [1.0, '#FFD166']],
+                    colorscale=[[0, '#2563EB'], [0.33, '#059669'], [0.66, '#E11D48'], [1.0, '#D97706']],
                     opacity=0.85
                 ),
                 text=[f"Customer: {cid}<br>Recency: {r}d<br>Freq: {f}<br>Spend: INR {m:,.2f}<br>Segment: {s}" 
@@ -715,11 +807,12 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                     yaxis_title='Frequency (Orders)',
                     zaxis_title='Monetary Spend (INR)',
                     camera=dict(eye=dict(x=1.65, y=1.65, z=1.25)),
-                    bgcolor="#FAF8F2"
+                    bgcolor="#F8FAFC"
                 ),
                 margin=dict(l=0, r=0, b=0, t=20),
-                height=580,
-                paper_bgcolor="#FFFFFF"
+                height=560,
+                paper_bgcolor="#FFFFFF",
+                font=dict(color="#0F172A")
             )
             st.plotly_chart(fig_3d, use_container_width=True)
         else:
@@ -748,15 +841,15 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                 fig_bar = px.bar(
                     agg_seg, x="segment_name", y="count", color="segment_name",
                     title="Segment Size Distribution",
-                    color_discrete_sequence=["#76C0EC", "#425B9A", "#FF95A5", "#FFD166"]
+                    color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706"]
                 )
-                fig_bar.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#FAF8F2")
+                fig_bar.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
                 st.plotly_chart(fig_bar, use_container_width=True)
 
             with c_p2:
                 st.markdown("""
-                <div style="background: #FFF6DC; border: 2px solid #425B9A; border-radius: 10px; padding: 18px; box-shadow: 4px 4px 0px #425B9A;">
-                    <h4 style="color: #425B9A; margin-top: 0;">🚀 Business Action Playbooks</h4>
+                <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 10px; padding: 18px; box-shadow: 4px 4px 0px #0F172A;">
+                    <h4 style="color: #0F172A; margin-top: 0;">🚀 Business Action Playbooks</h4>
                     <p><strong>👑 Champions (Premium)</strong>: Priority concierge, exclusive early access, dedicated support route.</p>
                     <p><strong>🌟 Promising</strong>: Personalized category upsells, loyalty tier progression bonuses.</p>
                     <p><strong>⚠️ At-Risk / Lapsed</strong>: Win-back discount coupons, push notifications on habitual shopping days.</p>
@@ -786,7 +879,7 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
 elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-pink">PART C PIPELINE</span>
+        <span class="iso-badge badge-rose">PART C PIPELINE</span>
         <h1>Support Ticket Privacy Guardrails & Smart Triage</h1>
         <p>Test real-time regex PII redaction (email, phone, order ID), input token guardrails, and customer-segment priority routing.</p>
     </div>
@@ -833,16 +926,16 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
                 elif tok_est > 400:
                     st.error("Guardrail Triggered: `flagged_long` (Discarded without LLM call)")
                 else:
-                    st.success("Guardrail Passed: Eligible for processing")
+                    st.success("Guardrail Passed: Eligible for model triage")
 
             if not is_empty and tok_est <= 400:
                 # 2. PII Redaction
                 redacted, counts = triage.redact_pii(user_ticket)
                 st.markdown("#### 2. PII Sanitization Transformation")
                 st.markdown(f"""
-                <div style="background: #FFF6DC; border: 2px solid #425B9A; border-radius: 8px; padding: 12px;">
+                <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 8px; padding: 14px;">
                     <div><strong>Substitutions Applied:</strong> {counts['email']} Emails, {counts['phone']} Phones, {counts['order_id']} Order IDs (Total: {counts['total']})</div>
-                    <div style="margin-top: 8px; font-family: monospace; color: #425B9A;"><strong>Redacted User Prompt:</strong> {redacted}</div>
+                    <div style="margin-top: 8px; font-family: monospace; color: #1E40AF; font-weight: 600;"><strong>Redacted Prompt:</strong> {redacted}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -882,9 +975,9 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
         if not df_tri.empty:
             fig_tri = px.pie(
                 df_tri, names="route", title="Production Route Distribution (164 Tickets)",
-                color_discrete_sequence=["#425B9A", "#76C0EC", "#FF95A5", "#FFF6DC"]
+                color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706"]
             )
-            fig_tri.update_layout(paper_bgcolor="#FFFFFF")
+            fig_tri.update_layout(paper_bgcolor="#FFFFFF", font=dict(color="#0F172A"))
             st.plotly_chart(fig_tri, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -895,7 +988,7 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
 elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-navy">PART D AUTONOMY</span>
+        <span class="iso-badge badge-dark">PART D AUTONOMY</span>
         <h1>Policy Retrieval-Augmented Generation & ReAct Refund Agent</h1>
         <p>Ground answers across 5 company policy documents, and simulate multi-step ReAct agent decision making with automated SQLite tool calls and state checkpointing.</p>
     </div>
@@ -926,7 +1019,7 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
             
             st.markdown("#### Grounded Model Response:")
             st.markdown(f"""
-            <div style="background: #FFF6DC; border: 2px solid #425B9A; border-radius: 8px; padding: 14px; font-weight: 600; color: #1C2438;">
+            <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 8px; padding: 16px; font-weight: 600; color: #0F172A;">
                 {ans_text}
             </div>
             """, unsafe_allow_html=True)
@@ -999,7 +1092,7 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
 elif app_mode == "⚡ Project Execution Hub":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-cream">PIPELINE AUTOMATION</span>
+        <span class="iso-badge badge-emerald">PIPELINE AUTOMATION</span>
         <h1>Project Execution & Reproduction Control Hub</h1>
         <p>Trigger and monitor live script executions for data auditing, cleaning, RFM model training, triage evaluation, and ReAct agent benchmarks.</p>
     </div>
@@ -1052,7 +1145,7 @@ elif app_mode == "⚡ Project Execution Hub":
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="text-align: center; color: #55627E; font-size: 0.85rem; margin-top: 32px;">
-        Instamart Copilot Intelligence Suite • Built with Streamlit, Plotly & Scikit-Learn • Palette: #425B9A, #76C0EC, #FFF6DC, #FF95A5
+    <div style="text-align: center; color: #475569; font-size: 0.85rem; margin-top: 32px; font-weight: 600;">
+        Instamart Copilot Intelligence Suite • High-Contrast WCAG AAA Theme • Powered by Streamlit, Plotly & Scikit-Learn
     </div>
     """, unsafe_allow_html=True)
