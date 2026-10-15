@@ -1,5 +1,5 @@
 {
-  "run_id": "run_S1_1792086216084",
+  "run_id": "run_S1_1792088383131",
   "scenario_id": "S1",
   "messages": [
     {
@@ -8,7 +8,7 @@
     },
     {
       "role": "user",
-      "content": "Order ORD-100048 took 65 minutes to arrive and I want my money back."
+      "content": "My order ORD-100048 reached me very late. I would like a refund."
     },
     {
       "role": "assistant",
@@ -89,7 +89,7 @@
       "content": "{\"refund_inr\": 128.25}"
     }
   ],
-  "tokens_used": 673,
+  "tokens_used": 669,
   "llm_calls": 4,
   "steps": [
     {

@@ -128,13 +128,15 @@ h1, h2, h3, h4, h5, h6, strong, b {
     border-radius: 16px !important;
     box-shadow: 6px 6px 0px #2563EB !important;
     padding: 30px 34px !important;
-    color: #FFFFFF !important;
+    color: #F1F5F9 !important;
     margin-bottom: 24px !important;
     position: relative !important;
     overflow: hidden !important;
 }
 
-.iso-hero h1 {
+.iso-hero h1,
+.iso-hero h1 *,
+div.iso-hero h1 {
     color: #FFFFFF !important;
     font-weight: 800 !important;
     font-size: 2.1rem !important;
@@ -142,7 +144,8 @@ h1, h2, h3, h4, h5, h6, strong, b {
     text-shadow: 2px 2px 0px #0F172A !important;
 }
 
-.iso-hero p {
+.iso-hero p,
+.iso-hero p * {
     color: #F1F5F9 !important;
     font-size: 1.02rem !important;
     max-width: 820px !important;
@@ -151,7 +154,7 @@ h1, h2, h3, h4, h5, h6, strong, b {
 
 /* Isomorphic KPI box */
 .iso-metric {
-    background: #FFFFFF !important;
+    background: #F1F5F9 !important;
     border: 2px solid #0F172A !important;
     border-radius: 12px !important;
     box-shadow: 4px 4px 0px #2563EB !important;
@@ -478,8 +481,8 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
     <div class="iso-hero">
         <span class="iso-badge badge-rose">ENTERPRISE PLATFORM</span>
         <span class="iso-badge badge-blue">VERSION 2.0</span>
-        <h1>Instamart Customer Intelligence & Autonomous Operations</h1>
-        <p>A mission-critical quick-commerce operations suite delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Instamart Customer Intelligence & Autonomous Operations</h1>
+        <p style="color: #F1F5F9 !important;">A mission-critical quick-commerce operations suite delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -614,8 +617,8 @@ elif app_mode == "🔍 Part A: Data Pipeline & SQL Studio":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-blue">PART A PIPELINE</span>
-        <h1>Data Cleaning, Relational Modeling & SQL Analytics</h1>
-        <p>Audit dirty operational telemetry, enforce strict cleaning transforms, and query SQLite <code>data/instamart.db</code> across multi-table joins, CTEs, and window functions.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Data Cleaning, Relational Modeling & SQL Analytics</h1>
+        <p style="color: #F1F5F9 !important;">Audit dirty operational telemetry, enforce strict cleaning transforms, and query SQLite <code>data/instamart.db</code> across multi-table joins, CTEs, and window functions.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -784,8 +787,8 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-emerald">PART B MODELING</span>
-        <h1>Customer RFM Clustering & Predictive Lapse AI</h1>
-        <p>Explore 3D RFM behavioral spaces, identify VIP Champions, and predict customer churn using balanced machine learning models without lookahead leakage.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Customer RFM Clustering & Predictive Lapse AI</h1>
+        <p style="color: #F1F5F9 !important;">Explore 3D RFM behavioral spaces, identify VIP Champions, and predict customer churn using balanced machine learning models without lookahead leakage.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -903,8 +906,8 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-rose">PART C PIPELINE</span>
-        <h1>Support Ticket Privacy Guardrails & Smart Triage</h1>
-        <p>Test real-time regex PII redaction (email, phone, order ID), input token guardrails, and customer-segment priority routing.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Support Ticket Privacy Guardrails & Smart Triage</h1>
+        <p style="color: #F1F5F9 !important;">Test real-time regex PII redaction (email, phone, order ID), input token guardrails, and customer-segment priority routing.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1012,8 +1015,8 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-dark">PART D AUTONOMY</span>
-        <h1>Policy Retrieval-Augmented Generation & ReAct Refund Agent</h1>
-        <p>Ground answers across 5 company policy documents, and simulate multi-step ReAct agent decision making with automated SQLite tool calls and state checkpointing.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Policy Retrieval-Augmented Generation & ReAct Refund Agent</h1>
+        <p style="color: #F1F5F9 !important;">Ground answers across 5 company policy documents, and simulate multi-step ReAct agent decision making with automated SQLite tool calls and state checkpointing.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1116,8 +1119,8 @@ elif app_mode == "⚡ Project Execution Hub":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-emerald">PIPELINE AUTOMATION</span>
-        <h1>Project Execution & Reproduction Control Hub</h1>
-        <p>Trigger and monitor live script executions for data auditing, cleaning, RFM model training, triage evaluation, and ReAct agent benchmarks.</p>
+        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Project Execution & Reproduction Control Hub</h1>
+        <p style="color: #F1F5F9 !important;">Trigger and monitor live script executions for data auditing, cleaning, RFM model training, triage evaluation, and ReAct agent benchmarks.</p>
     </div>
     """, unsafe_allow_html=True)
 
