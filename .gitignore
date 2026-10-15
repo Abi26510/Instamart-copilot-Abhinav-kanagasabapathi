@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Database and SQLite temporary files
+*.db-journal
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
