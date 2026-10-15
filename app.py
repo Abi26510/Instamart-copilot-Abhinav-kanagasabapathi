@@ -142,7 +142,7 @@ h1, h2, h3, h4, h5, h6, strong, b {
     text-shadow: 2px 2px 0px #0F172A !important;
 }
 
-.iso-hero p, .iso-hero span {
+.iso-hero p {
     color: #F1F5F9 !important;
     font-size: 1.02rem !important;
     max-width: 820px !important;
@@ -181,43 +181,66 @@ h1, h2, h3, h4, h5, h6, strong, b {
     color: #475569 !important;
 }
 
-/* High-Contrast Badges */
-.iso-badge {
+/* High-Contrast Solid Badges */
+.iso-badge, 
+.iso-hero .iso-badge, 
+.iso-card .iso-badge,
+span.iso-badge {
     display: inline-block !important;
-    padding: 4px 12px !important;
+    padding: 5px 14px !important;
     font-size: 0.78rem !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.06em !important;
     border-radius: 6px !important;
-    margin-right: 6px !important;
-    margin-bottom: 4px !important;
+    margin-right: 8px !important;
+    margin-bottom: 6px !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+    vertical-align: middle !important;
 }
 
-.badge-blue {
-    background: #EFF6FF !important;
-    color: #1E40AF !important;
-    border: 1.5px solid #3B82F6 !important;
-    box-shadow: 2px 2px 0px #1E40AF !important;
-}
-
-.badge-emerald {
-    background: #ECFDF5 !important;
-    color: #065F46 !important;
-    border: 1.5px solid #10B981 !important;
-    box-shadow: 2px 2px 0px #065F46 !important;
-}
-
-.badge-rose {
-    background: #FFF1F2 !important;
-    color: #9F1239 !important;
-    border: 1.5px solid #F43F5E !important;
-    box-shadow: 2px 2px 0px #9F1239 !important;
-}
-
-.badge-dark {
-    background: #0F172A !important;
+/* Badge Rose / Coral */
+.badge-rose, 
+.iso-hero .badge-rose, 
+.iso-card .badge-rose,
+span.badge-rose {
+    background-color: #E11D48 !important;
     color: #FFFFFF !important;
     border: 1.5px solid #0F172A !important;
-    box-shadow: 2px 2px 0px #2563EB !important;
+    box-shadow: 2px 2px 0px #0F172A !important;
+}
+
+/* Badge Blue */
+.badge-blue, 
+.iso-hero .badge-blue, 
+.iso-card .badge-blue,
+span.badge-blue {
+    background-color: #2563EB !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid #0F172A !important;
+    box-shadow: 2px 2px 0px #0F172A !important;
+}
+
+/* Badge Emerald */
+.badge-emerald, 
+.iso-hero .badge-emerald, 
+.iso-card .badge-emerald,
+span.badge-emerald {
+    background-color: #059669 !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid #0F172A !important;
+    box-shadow: 2px 2px 0px #0F172A !important;
+}
+
+/* Badge Dark / Slate */
+.badge-dark, 
+.iso-hero .badge-dark, 
+.iso-card .badge-dark,
+span.badge-dark {
+    background-color: #0F172A !important;
+    color: #FFFFFF !important;
+    border: 1.5px solid #38BDF8 !important;
+    box-shadow: 2px 2px 0px #38BDF8 !important;
 }
 
 /* Action Buttons */
