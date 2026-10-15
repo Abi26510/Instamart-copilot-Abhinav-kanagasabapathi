@@ -332,7 +332,12 @@ def get_db_connection():
 @st.cache_data
 def load_segments():
     if os.path.exists("outputs/customer_segments.csv"):
-        return pd.read_csv("outputs/customer_segments.csv")
+        df = pd.read_csv("outputs/customer_segments.csv")
+        if "segment_id" in df.columns and "cluster" not in df.columns:
+            df["cluster"] = df["segment_id"]
+        elif "cluster" in df.columns and "segment_id" not in df.columns:
+            df["segment_id"] = df["cluster"]
+        return df
     return pd.DataFrame()
 
 @st.cache_data
@@ -802,29 +807,29 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
         st.markdown("Rotate and explore the customer behavioral feature space in 3D with high-contrast cluster coloring.")
 
         if not df_seg.empty:
+            # Safe column resolution
+            c_col = "segment_id" if "segment_id" in df_seg.columns else "cluster"
+
             # 3D Scatter Plot with Isometric Perspective
             palette_map = {
-                "At-Risk / Lapsed": "#E11D48",
-                "Champions": "#2563EB",
-                "Promising": "#059669",
-                "Occasional Buyers": "#D97706"
+                "High-Value Premium": "#2563EB",
+                "Loyal Power Shoppers": "#059669",
+                "Occasional Low-Spend": "#D97706",
+                "At-Risk / Dormant": "#E11D48"
             }
 
-            fig_3d = go.Figure(data=[go.Scatter3d(
-                x=df_seg["recency"],
-                y=df_seg["frequency"],
-                z=df_seg["monetary"],
-                mode='markers',
-                marker=dict(
-                    size=4.5,
-                    color=df_seg["cluster"],
-                    colorscale=[[0, '#2563EB'], [0.33, '#059669'], [0.66, '#E11D48'], [1.0, '#D97706']],
-                    opacity=0.85
-                ),
-                text=[f"Customer: {cid}<br>Recency: {r}d<br>Freq: {f}<br>Spend: INR {m:,.2f}<br>Segment: {s}" 
-                      for cid, r, f, m, s in zip(df_seg['customer_id'], df_seg['recency'], df_seg['frequency'], df_seg['monetary'], df_seg['segment_name'])],
-                hoverinfo='text'
-            )])
+            fig_3d = px.scatter_3d(
+                df_seg,
+                x="recency",
+                y="frequency",
+                z="monetary",
+                color="segment_name",
+                hover_name="customer_id",
+                color_discrete_map=palette_map,
+                opacity=0.85
+            )
+
+            fig_3d.update_traces(marker=dict(size=4.5))
 
             # Set camera to 2.5D Isometric angle
             fig_3d.update_layout(
@@ -850,7 +855,8 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
         st.markdown("### 📊 Customer Segment Profiles & Strategic Recommendations")
         
         if not df_seg.empty:
-            agg_seg = df_seg.groupby(["cluster", "segment_name", "is_premium"]).agg(
+            c_col = "segment_id" if "segment_id" in df_seg.columns else "cluster"
+            agg_seg = df_seg.groupby([c_col, "segment_name", "is_premium"]).agg(
                 count=("customer_id", "count"),
                 avg_recency=("recency", "mean"),
                 avg_frequency=("frequency", "mean"),
@@ -867,7 +873,12 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                 fig_bar = px.bar(
                     agg_seg, x="segment_name", y="count", color="segment_name",
                     title="Segment Size Distribution",
-                    color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706"]
+                    color_discrete_map={
+                        "High-Value Premium": "#2563EB",
+                        "Loyal Power Shoppers": "#059669",
+                        "Occasional Low-Spend": "#D97706",
+                        "At-Risk / Dormant": "#E11D48"
+                    }
                 )
                 fig_bar.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
                 st.plotly_chart(fig_bar, use_container_width=True)
@@ -876,10 +887,10 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                 st.markdown("""
                 <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 10px; padding: 18px; box-shadow: 4px 4px 0px #0F172A;">
                     <h4 style="color: #0F172A; margin-top: 0;">🚀 Business Action Playbooks</h4>
-                    <p><strong>👑 Champions (Premium)</strong>: Priority concierge, exclusive early access, dedicated support route.</p>
-                    <p><strong>🌟 Promising</strong>: Personalized category upsells, loyalty tier progression bonuses.</p>
-                    <p><strong>⚠️ At-Risk / Lapsed</strong>: Win-back discount coupons, push notifications on habitual shopping days.</p>
-                    <p><strong>🛒 Occasional Buyers</strong>: Category discovery prompts, free delivery thresholds.</p>
+                    <p><strong>👑 High-Value Premium</strong>: Priority VIP concierge, high priority desk, instant escalation.</p>
+                    <p><strong>⚡ Loyal Power Shoppers</strong>: Bulk basket offers, loyalty tier progression, free express delivery.</p>
+                    <p><strong>🛒 Occasional Low-Spend</strong>: Category discovery incentives, personalized introductory offers.</p>
+                    <p><strong>⚠️ At-Risk / Dormant</strong>: Targeted win-back discount coupons, re-engagement alerts.</p>
                 </div>
                 """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
