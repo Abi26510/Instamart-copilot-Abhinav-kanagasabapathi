@@ -962,7 +962,7 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
         if run_btn:
             # 1. Guardrail Check
             is_empty = len(user_ticket.strip()) == 0
-            tok_est = triage.est_tokens(user_ticket)
+            tok_est = mock_llm.est_tokens(user_ticket)
             
             st.markdown("#### 1. Input Guardrail Inspection")
             g1, g2 = st.columns(2)
@@ -978,24 +978,49 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
 
             if not is_empty and tok_est <= 400:
                 # 2. PII Redaction
-                redacted, counts = triage.redact_pii(user_ticket)
+                redacted, n_email, n_phone, n_order = triage.redact_pii(user_ticket)
+                total_subs = n_email + n_phone + n_order
                 st.markdown("#### 2. PII Sanitization Transformation")
                 st.markdown(f"""
                 <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 8px; padding: 14px;">
-                    <div><strong>Substitutions Applied:</strong> {counts['email']} Emails, {counts['phone']} Phones, {counts['order_id']} Order IDs (Total: {counts['total']})</div>
+                    <div><strong>Substitutions Applied:</strong> {n_email} Emails, {n_phone} Phones, {n_order} Order IDs (Total: {total_subs})</div>
                     <div style="margin-top: 8px; font-family: monospace; color: #1E40AF; font-weight: 600;"><strong>Redacted Prompt:</strong> {redacted}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-                # 3. Model Classification
+                # 3. Model Classification with Retry
                 st.markdown("#### 3. Few-Shot Model Classification")
                 is_premium_val = (cust_tier == "Premium VIP (is_premium=True)")
-                res = triage.classify_ticket(redacted, triage.FEW_SHOT_PROMPT, retry_func=triage.call_llm_with_retry)
-                route, priority = triage.route_ticket(res["status"], res["category"], is_premium=is_premium_val)
+                messages = [
+                    {"role": "system", "content": triage.FEW_SHOT_PROMPT},
+                    {"role": "user", "content": redacted}
+                ]
+                with st.spinner("Classifying ticket via Mock LLM..."):
+                    resp = triage.call_llm_with_retry(messages, "INTERACTIVE-TICKET")
+                    resp_content = resp.choices[0].message.content
+                    status, cat = triage.validate_response(resp_content)
+
+                    # Dynamic Routing
+                    if status in ["skipped_empty", "flagged_long", "flagged_invalid_output", "budget_exhausted"]:
+                        route = "human_review"
+                        priority = "NORMAL"
+                        cat_out = "N/A"
+                    elif cat == "fraud":
+                        route = "security_team"
+                        priority = "HIGH"
+                        cat_out = cat
+                    elif is_premium_val:
+                        route = "premium_desk"
+                        priority = "HIGH"
+                        cat_out = cat
+                    else:
+                        route = "support_queue"
+                        priority = "NORMAL"
+                        cat_out = cat
 
                 r1, r2, r3, r4 = st.columns(4)
-                r1.metric("Predicted Category", str(res["category"]).upper())
-                r2.metric("Output Status", res["status"])
+                r1.metric("Predicted Category", cat_out.upper() if cat_out else "N/A")
+                r2.metric("Output Status", status)
                 r3.metric("Assigned Route", route)
                 r4.metric("Queue Priority", priority)
 
