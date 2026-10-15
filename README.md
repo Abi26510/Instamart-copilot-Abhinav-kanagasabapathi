@@ -85,6 +85,12 @@ Follow these numbered steps to reproduce the entire environment, synthetic data 
     python agent.py
     ```
 
+13. **Launch the Interactive Visual Dashboard**:
+    Launches the unified Streamlit intelligence dashboard featuring isomorphic 2.5D design, live SQL studio, 3D RFM clustering visualizer, live PII triage tester, policy RAG Q&A, and ReAct refund agent execution:
+    ```bash
+    streamlit run app.py
+    ```
+
 ---
 
 ## 2. Raw Data Audit
