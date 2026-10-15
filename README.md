@@ -79,6 +79,12 @@ Follow these numbered steps to reproduce the entire environment, synthetic data 
     python triage.py
     ```
 
+12. **Run Policy RAG & ReAct Refund Agent**:
+    Executes policy chunking (15 chunks), TF-IDF retrieval, grounded Q&A evaluation over `data/raw/policy_eval.csv`, 7 ReAct refund agent scenarios (`outputs/agent_runs.jsonl`, `outputs/refund_ledger.jsonl`), safety stop demonstrations, and crash-and-resume validation:
+    ```bash
+    python agent.py
+    ```
+
 ---
 
 ## 2. Raw Data Audit
@@ -566,5 +572,109 @@ Executed using the 100% accurate few-shot pipeline with `TOKEN_BUDGET = 100,000`
 | **Total** | — | **164** | Complete ticket coverage with 0 dropped records. |
 
 - **Exported File**: Saved to [`outputs/triage_results.csv`](file:///A:/Capstone%20project/instamart-copilot/outputs/triage_results.csv) (`ticket_id`, `customer_id`, `status`, `category`, `segment_name`, `priority`, `route`, `tokens_used`).
+
+---
+
+## 11. Policy RAG & ReAct Refund Agent (Part D)
+
+Part D implements an intelligent, retrieval-grounded policy Q&A assistant and an autonomous ReAct refund agent that executes policy lookups, queries relational order records from `data/instamart.db`, evaluates business eligibility rules, logs auditable decisions, and safely falls back upon boundary conditions.
+
+---
+
+### (a) Document Chunking & TF-IDF Retrieval
+
+The five operational policies in `data/policies/` were ingested and split into fixed windows of 40 words with a 10-word sliding overlap:
+- `chunk_0`: words 0–39
+- `chunk_1`: words 30–69 (10-word overlap)
+- Iteration terminates once a window reaches or exceeds the final word.
+
+#### Chunk Distribution (15 Chunks Total)
+
+| Policy Document | Word Count | Chunk Count | Policy Topic Scope |
+| :--- | :---: | :---: | :--- |
+| `refund_policy.txt` | 130 | **4** | Eligibility criteria, >45 min full refund rule, INR 1000 auto-approval threshold. |
+| `delivery_policy.txt` | 98 | **3** | Delivery guarantees, weather delays, driver partner allocation. |
+| `escalation_policy.txt` | 95 | **3** | Support tiers, executive escalations, grievance handling timelines. |
+| `payment_policy.txt` | 94 | **3** | Payment gateway methods, deduction failure 48-hour reversal, chargebacks. |
+| `privacy_policy.txt` | 74 | **2** | Customer data protection, telemetry logging, PII retention mandates. |
+| **Total** | **491** | **15** | Matches reference benchmark exactly. |
+
+#### TF-IDF Retrieval Mechanics
+- **TF (Term Frequency)**: Measures the relative frequency of a term within an individual text chunk ($\text{count}(t) / \text{total\_words}$), establishing local relevance.
+- **IDF (Inverse Document Frequency)**: Measures the rarity and informativeness of a term across all chunks in the corpus ($\log(N / \text{df}) + 1$), penalizing universal terms such as "policy" or "customer".
+- **Limitation**: TF-IDF relies entirely on exact lexical matches and n-gram overlap; it cannot capture semantic equivalence or synonyms (e.g., failing to connect "reimbursement" to "refund", or "tardy arrival" to "late delivery").
+- **Query Verification**: For the query `refund policy late delivery`, the top-3 ranked chunks all originate from `refund_policy.txt` (Cosine similarity scores: 0.2719, 0.2514, and 0.2454).
+
+---
+
+### (b) Grounding Evaluation (`data/raw/policy_eval.csv`)
+
+Grounding performance was evaluated across 14 benchmark questions (12 answerable questions spanning all five policy files and 2 unanswerable questions: Q13 regarding pet policies and Q14 regarding international shipping). A grounded system prompt containing `POLICY ASSISTANT` instructed the model to answer strictly from retrieved context and fall back to *"could not find the information in the policy documents"* when unsupported.
+
+| Grounding Metric | 10-Word Overlap | 0-Word Overlap | Benchmark Reference |
+| :--- | :---: | :---: | :--- |
+| **Expected Document in Top 3** | **12 / 12** (100.0%) | **12 / 12** (100.0%) | 12 / 12 |
+| **Expected Fact Retrieved in Answer** | **12 / 12** (100.0%) | **10 / 12** (83.3%) | 12 / 12 (Overlap=10) vs. < 12 (Overlap=0) |
+| **Unanswerable Fallback Triggered** | **2 / 2** (100.0%) | **2 / 2** (100.0%) | 2 / 2 |
+
+#### Why Zero-Overlap Fails on Sentence Boundaries
+Zero-word chunking splits text strictly at word boundaries without context preservation, breaking cross-sentence dependency:
+1. **Question 1** (*"What delivery time makes a completed order eligible for a full refund?"*): In `refund_policy.txt`, the rule *"A customer whose completed order is delivered in more than 45 minutes receives a full refund of the order amount."* is split across the 40-word boundary. Chunk 0 contains the start, but Chunk 1 receives only *"receives a full refund of the order amount."*, severing the critical qualifying clause *"more than 45 minutes"*.
+2. **Question 8** (*"How soon is money returned when a payment fails but is deducted?"*): In `payment_policy.txt`, the reversal guarantee *"If a payment fails but money is deducted, the amount is returned automatically within 48 hours."* is severed, isolating *"within 48 hours"* from the payment deduction context.
+
+A 10-word overlap guarantees semantic continuity across boundaries, preserving key qualifiers.
+
+---
+
+### (c) ReAct Refund Agent
+
+The ReAct agent implements an autonomous reasoning loop interleaving `Thought:`, `Action: <tool>`, `Action Input: <json>`, and `Observation: <output>`. It interfaces with five operational tools:
+1. `get_order(order_id)`: Queries SQLite `data/instamart.db` to retrieve order status, monetary amount, and delivery duration.
+2. `search_policy(query)`: Invokes the TF-IDF retriever over policy chunks.
+3. `calculate_refund(order_amount, delivery_minutes)`: Implements quick-commerce refund logic (completed and >45 min $\rightarrow$ 100% refund; $\le$45 min $\rightarrow$ INR 0.00).
+4. `issue_refund(order_id, refund_inr)`: Persists approved refunds ($\le$ INR 1000) to `outputs/refund_ledger.jsonl`.
+5. `escalate_to_human(order_id, refund_inr)`: Logs high-value refunds (> INR 1000) to `outputs/refund_ledger.jsonl` for human supervisor approval.
+
+#### Scenario Execution Results (`data/raw/agent_scenarios.csv`)
+
+| Scenario ID | Order ID | Input Message | Expected Outcome | Final Status | Refund Amount | LLM Calls | Tokens Used |
+| :---: | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
+| **S1** | `ORD-100048` | Order took 65 min to arrive | Refund 100% | `REFUND` | **INR 128.25** | 5 | 957 |
+| **S2** | `ORD-100067` | Arrived in 59 min, request refund | Refund 100% | `REFUND` | **INR 135.00** | 5 | 957 |
+| **S3** | `ORD-100145` | Took 54 min to arrive (large order) | Escalate (> INR 1000) | `ESCALATE` | **INR 1999.00** | 5 | 944 |
+| **S4** | `ORD-100001` | Arrived in 20 min, request refund | Denied ($\le$ 45 min) | `DENIED` | **INR 0.00** | 4 | 653 |
+| **S5** | `ORD-100025` | Cancelled order refund request | Denied (cancelled) | `DENIED` | **INR 0.00** | 3 | 373 |
+| **S6** | `ORD-999999` | Non-existent order id | Order not found | `NOT_FOUND` | **INR 0.00** | 2 | 96 |
+| **S7** | — | Vague complaint without order id | Exceed max steps | `FALLBACK_MAX_ITERATIONS` | **INR 0.00** | 6 | 3,072 |
+
+- **Why S7 Terminates at 6 Calls**: Scenario S7 issues repetitive, ungrounded policy searches in an infinite reasoning loop. With default `token_limit = 6000`, the agent executes until reaching `FALLBACK_MAX_ITERATIONS = 6`, consuming 3,072 tokens before safely stopping and escalating to human support.
+- **Persisted Artifacts**: Full step-by-step traces saved to [`outputs/agent_runs.jsonl`](file:///A:/Capstone%20project/instamart-copilot/outputs/agent_runs.jsonl); financial audit trails saved to [`outputs/refund_ledger.jsonl`](file:///A:/Capstone%20project/instamart-copilot/outputs/refund_ledger.jsonl).
+
+---
+
+### (d) Safety Stops & Resumability
+
+#### Safety Limits Demonstration
+1. **Token Limit Cap (`token_limit = 200`)**: Evaluated on S1. The agent executes Step 1 (`get_order`), but upon exceeding the 200 token budget (accumulating 390 tokens), it halts immediately with status **`FALLBACK_TOKEN_LIMIT`**.
+2. **Timeout Cap (`time_limit_seconds = 0.0`)**: Evaluated on S1. The agent checks execution elapsed time prior to invoking the LLM, halting immediately with status **`FALLBACK_TIMEOUT`** (0 LLM calls).
+
+#### Crash-and-Resume Demonstration
+To ensure fault tolerance against infrastructure failures, the agent serializes execution state to `state/<run_id>.json` before and after every tool invocation.
+- **Simulated Crash**: An artificial exception was triggered during Scenario S1 immediately after Step 2 (`search_policy`).
+- **Resumption**: Calling `resume_agent(run_id)` restored prior thoughts, messages, and observations from disk, continuing execution without duplicate tool invocations.
+- **Executed Tool Sequence**:
+  $$\text{get\_order} \longrightarrow \text{search\_policy} \longrightarrow \text{calculate\_refund} \longrightarrow \text{issue\_refund}$$
+- **Verification**: Exactly 4 distinct tools were executed with zero duplicates, terminating in status `REFUND` with **INR 128.25** recorded in the ledger.
+
+---
+
+### (e) Architectural Analysis: ReAct vs. Plan-and-Execute
+
+The ReAct (Reasoning + Acting) architecture interleaves thought, tool execution, and observation in a dynamic loop, allowing an agent to condition each subsequent decision on real runtime feedback. Conversely, Plan-and-Execute decouples planning from action: a model first generates a complete DAG of tasks, then executes them sequentially via worker tools.
+
+In quick-commerce refund triage, ReAct proves vastly superior in handling exceptions and uncertainty. Operational workflows frequently encounter terminal preconditions—such as missing orders (Scenario S6: NOT_FOUND) or non-refundable statuses (Scenario S5: cancelled order DENIED). ReAct opportunistically terminates immediately upon observing these invalid states, taking only 2 tool calls (96 tokens) for S6 and 3 calls (373 tokens) for S5. In contrast, Plan-and-Execute would formulate an entire workflow upfront—including database querying, policy retrieval, refund calculation, and ledger logging. When step 1 discovers that the order does not exist or was cancelled, the pre-computed downstream plan collapses, forcing costly replanning cycles and wasting substantial context tokens.
+
+However, ReAct's flexibility introduces vulnerability to reasoning loops when faced with ambiguous requests or persistent tool repetitions (as observed in Scenario S7, which consumed 3,072 tokens before hitting MAX_ITERATIONS). Plan-and-Execute offers more predictable global optimization and parallel tool invocation for static, deterministic pipelines. For dynamic customer operations where operational ground truth must dictate policy compliance, ReAct provides the essential reactivity required to prevent premature or erroneous refund disbursements.
+
 
 
