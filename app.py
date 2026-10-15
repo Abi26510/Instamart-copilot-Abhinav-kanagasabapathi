@@ -1088,7 +1088,8 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
         q_text = st.text_input("Question:", q_choice if q_choice != "Custom Query..." else "What delivery time qualifies for a refund?")
 
         if st.button("Query Policy RAG Assistant"):
-            ans_text, top_chunks = agent.default_retriever.answer(q_text)
+            top_chunks = agent.default_retriever.retrieve(q_text, k=3)
+            ans_text, _ = agent.default_retriever.answer(q_text, k=3)
             
             st.markdown("#### Grounded Model Response:")
             st.markdown(f"""
