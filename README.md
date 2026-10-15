@@ -73,6 +73,12 @@ Follow these numbered steps to reproduce the entire environment, synthetic data 
     python train_models.py
     ```
 
+11. **Run Customer Support Ticket Triage Pipeline**:
+    Applies input guardrails, regex PII redaction, resilient retry handling, output validation, comparative evaluation, token budget demonstration, and contextual routing:
+    ```bash
+    python triage.py
+    ```
+
 ---
 
 ## 2. Raw Data Audit
@@ -462,4 +468,103 @@ Scoring test-set customers in the Premium segment yielded the prioritized outrea
   - Incorporate live session telemetry (app opens, cart abandonment events) into real-time lapse scoring.
   - Implement dynamic coupon allocation testing based on predicted lapse probabilities.
   - Connect `outputs/customer_segments.csv` to customer support ticket routing (Part C).
+
+---
+
+## 10. Customer Support Ticket Triage & Guardrails (Part C)
+
+An end-to-end, privacy-preserving, resilient triage pipeline built in [`triage.py`](file:///A:/Capstone%20project/instamart-copilot/triage.py) around `mock_llm.py` across 164 raw customer support tickets.
+
+### (a) Input Guardrails & PII Redaction Audit
+
+#### 1. Input Guardrails
+Before invoking the model:
+- **Empty / Whitespace Guardrail**: **4 tickets** contained no meaningful text and were flagged as `skipped_empty` (never sent to the LLM).
+- **Length / Token Guardrail**: **4 tickets** exceeded `MAX_INPUT_TOKENS = 400` (each estimated to **734 tokens**) and were flagged as `flagged_long` (never sent to the LLM).
+- **Eligible Tickets for LLM**: **156 tickets** ($164 - 4 - 4 = 156$).
+
+#### 2. PII Redaction
+Strict regular expressions were applied in explicit sequential order to ensure zero sensitive personal identifiers reach the model:
+1. **Email Address**: `[\w.+-]+@[\w-]+\.[\w.]+` $\rightarrow$ `[EMAIL]` (**55 substitutions**)
+2. **Phone Number**: `\b[6-9]\d{9}\b` $\rightarrow$ `[PHONE]` (**91 substitutions**)
+3. **Order ID**: `ORD-\d{6}` $\rightarrow$ `[ORDER_ID]` (**132 substitutions**)
+- **Total PII Substitutions**: Exactly **278 substitutions** across all 164 tickets.
+- **Post-Redaction Leakage Check**: Re-evaluating the 3 regex patterns over the redacted corpus identified **0 remaining instances**, strictly confirmed via runtime assertions.
+- **Prompt Safety**: The user message sent to the model contains *strictly the redacted ticket text and nothing else*.
+
+---
+
+### (b) Dual Prompting, Resiliency & Output Validation
+
+#### Dual Prompt Engineering
+- **Zero-Shot Prompt**: Begins with `CLASSIFY`, enumerates the four allowed categories (`billing`, `delivery`, `technical`, `fraud`), and mandates JSON-only replies matching `{"category": "...", "reason": "..."}` without examples.
+- **Few-Shot Prompt**: Identical schema header, followed by an `EXAMPLES:` block containing labelled demonstrations (including a fraud account takeover example).
+
+#### Resilient Retry Execution
+Model calls were wrapped in exponential backoff with random jitter:
+$$\text{Wait} = \text{BASE\_DELAY} \times 2^n \times \text{Uniform}(0.9, 1.15) \quad (\text{BASE\_DELAY} = 0.05\text{s})$$
+- Across the 156 eligible tickets, exactly **19 TransientLLMError (503 server busy)** exceptions were raised.
+- Every failure occurred on call attempt $n=0$ and was **100% recovered on the first retry** (wait times between 0.0450s and 0.0575s). Zero permanent failures occurred.
+
+#### Strict Two-Stage Output Validation
+1. **JSON Parser**: If output is valid JSON and `category` is in the allowed set $\rightarrow$ `classified_json` (**135 tickets**).
+2. **Keyword Fallback**: If JSON parsing fails (e.g., chatty responses), words are extracted via `re.findall(r"[a-z]+", text.lower())`. If exactly one allowed category is present $\rightarrow$ `classified_keyword` (**12 tickets**, handling responses of the form *"The customer appears to have a <category>-related problem."*).
+3. **Guardrail Routing**: If JSON category is out-of-bounds (e.g., `"shipping"`) or keyword extraction is ambiguous $\rightarrow$ `flagged_invalid_output` (**9 tickets** routed directly to human review).
+
+---
+
+### (c) Comparative Evaluation: Zero-Shot vs. Few-Shot
+
+| Performance Metric | Zero-Shot Run | Few-Shot Run | Variance / Impact |
+| :--- | :---: | :---: | :--- |
+| **Status Breakdown** | 135 json / 12 kw / 9 invalid | 135 json / 12 kw / 9 invalid | Identical response formats |
+| **Tickets Classified** | **147** | **147** | Complete rule coverage |
+| **Classification Accuracy** | **85.71%** (126 / 147) | **100.00%** (147 / 147) | **+14.29% accuracy gain** |
+| **Total Tokens Consumed** | 10,336 tokens | 20,320 tokens | +9,984 tokens (+96.6%) |
+| **Tokens per Classified Ticket** | **70.31 tokens** | **138.23 tokens** | +67.92 tokens/ticket |
+
+#### Zero-Shot Confusion Matrix (147 Classified Tickets)
+
+| True Category \ Predicted | `billing` | `delivery` | `fraud` | `technical` | Total | Accuracy |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **`billing`** | **38** | 0 | 0 | 0 | 38 | 100.0% |
+| **`delivery`** | 0 | **36** | 0 | 0 | 36 | 100.0% |
+| **`fraud`** | **11** | 0 | **23** | 0 | 34 | 67.6% |
+| **`technical`** | **10** | 0 | 0 | **29** | 39 | 74.4% |
+| **Total** | 59 | 36 | 23 | 29 | 147 | **85.71%** |
+
+*Analysis of Misclassifications*: In zero-shot classification, all 21 errors stemmed from `fraud` (11 tickets) or `technical` (10 tickets) being erroneously predicted as `billing` due to secondary billing keyword overlap in unguided context.
+
+#### When are Extra Few-Shot Tokens Worth Paying For?
+> In our evaluation, few-shot prompting consumes 138.23 tokens per ticket compared to 70.31 tokens for zero-shot (a 96.6% token overhead, adding 9,984 total tokens across 147 tickets). However, few-shot increases accuracy from 85.71% to 100.00%, completely eliminating all 21 misclassifications. Crucially, zero-shot misclassified 11 fraud tickets as billing; in quick commerce, missing fraudulent account takeovers causes catastrophic chargebacks and regulatory liability that far outweigh the fraction-of-a-cent marginal token cost. Therefore, the extra few-shot tokens are unequivocally worth paying for in high-risk, compliance-sensitive domains like fraud triage.
+
+---
+
+### (d) Token Budgeting & Production Routing
+
+#### 1. Token Budget Demo (`outputs/triage_budget_demo.csv`)
+- **Budget Cap**: `TOKEN_BUDGET = 6,000` tokens.
+- **Run Outcome**: Running total reached the 6,000 token limit at ticket 96. Exactly **65 tickets were stopped and assigned `budget_exhausted`**, routing directly to human review without incurring additional model costs.
+- **File**: Saved to [`outputs/triage_budget_demo.csv`](file:///A:/Capstone%20project/instamart-copilot/outputs/triage_budget_demo.csv).
+
+#### 2. Production Triage Routing (`outputs/triage_results.csv`)
+Executed using the 100% accurate few-shot pipeline with `TOKEN_BUDGET = 100,000`, incorporating Part B customer segment enrichment (`outputs/customer_segments.csv`):
+- **Routing Rules**:
+  1. `skipped_empty`, `flagged_long`, `flagged_invalid_output`, or `budget_exhausted` $\rightarrow$ `human_review` (Priority: `NORMAL`).
+  2. Otherwise, if category is `fraud` $\rightarrow$ `security_team` (Priority: `HIGH`).
+  3. Otherwise, if customer is marked `is_premium == True` $\rightarrow$ `premium_desk` (Priority: `HIGH`).
+  4. All remaining tickets $\rightarrow$ `support_queue` (Priority: `NORMAL`).
+
+#### Routing Distribution (164 Tickets)
+
+| Destination Route | Assigned Priority | Ticket Count | Description / Driver |
+| :--- | :---: | :---: | :--- |
+| **`support_queue`** | `NORMAL` | **102** | Standard automated triage for routine billing, delivery, and technical tickets. |
+| **`security_team`** | `HIGH` | **34** | Urgent escalation for confirmed fraud and unauthorized account activities. |
+| **`human_review`** | `NORMAL` | **17** | Guardrail fallbacks: 4 empty tickets, 4 oversized tickets (>400 tokens), and 9 unparseable/out-of-bounds LLM outputs. |
+| **`premium_desk`** | `HIGH` | **11** | VIP fast-track queue for verified high-value premium customers (`is_premium == True`). |
+| **Total** | — | **164** | Complete ticket coverage with 0 dropped records. |
+
+- **Exported File**: Saved to [`outputs/triage_results.csv`](file:///A:/Capstone%20project/instamart-copilot/outputs/triage_results.csv) (`ticket_id`, `customer_id`, `status`, `category`, `segment_name`, `priority`, `route`, `tokens_used`).
+
 
