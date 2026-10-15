@@ -1,6 +1,6 @@
 {
-  "run_id": "run_S4_1792083453715",
-  "scenario_id": "S4",
+  "run_id": "run_S1_1792085584785",
+  "scenario_id": "S1",
   "messages": [
     {
       "role": "system",
@@ -8,7 +8,7 @@
     },
     {
       "role": "user",
-      "content": "Please refund order ORD-100001, I did not like the delivery."
+      "content": "My order ORD-100048 reached me very late. I would like a refund."
     },
     {
       "role": "assistant",
@@ -18,7 +18,7 @@
           "id": "call_1",
           "name": "get_order",
           "arguments": {
-            "order_id": "ORD-100001"
+            "order_id": "ORD-100048"
           }
         }
       ]
@@ -27,7 +27,7 @@
       "role": "tool",
       "tool_call_id": "call_1",
       "name": "get_order",
-      "content": "{\"order_id\": \"ORD-100001\", \"status\": \"completed\", \"order_amount\": 109.65, \"delivery_minutes\": 20.0}"
+      "content": "{\"order_id\": \"ORD-100048\", \"status\": \"completed\", \"order_amount\": 128.25, \"delivery_minutes\": 65.0}"
     },
     {
       "role": "assistant",
@@ -56,8 +56,8 @@
           "id": "call_3",
           "name": "calculate_refund",
           "arguments": {
-            "order_amount": 109.65,
-            "delivery_minutes": 20.0
+            "order_amount": 128.25,
+            "delivery_minutes": 65.0
           }
         }
       ]
@@ -66,23 +66,43 @@
       "role": "tool",
       "tool_call_id": "call_3",
       "name": "calculate_refund",
-      "content": "{\"refund_inr\": 0.0}"
+      "content": "{\"refund_inr\": 128.25}"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_4",
+          "name": "issue_refund",
+          "arguments": {
+            "order_id": "ORD-100048",
+            "refund_inr": 128.25
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_4",
+      "name": "issue_refund",
+      "content": "{\"refund_inr\": 128.25}"
     }
   ],
-  "tokens_used": 381,
-  "llm_calls": 3,
+  "tokens_used": 669,
+  "llm_calls": 4,
   "steps": [
     {
       "step": 1,
       "tool_name": "get_order",
       "arguments": {
-        "order_id": "ORD-100001"
+        "order_id": "ORD-100048"
       },
       "observation": {
-        "order_id": "ORD-100001",
+        "order_id": "ORD-100048",
         "status": "completed",
-        "order_amount": 109.65,
-        "delivery_minutes": 20.0
+        "order_amount": 128.25,
+        "delivery_minutes": 65.0
       }
     },
     {
@@ -115,17 +135,29 @@
       "step": 3,
       "tool_name": "calculate_refund",
       "arguments": {
-        "order_amount": 109.65,
-        "delivery_minutes": 20.0
+        "order_amount": 128.25,
+        "delivery_minutes": 65.0
       },
       "observation": {
-        "refund_inr": 0.0
+        "refund_inr": 128.25
+      }
+    },
+    {
+      "step": 4,
+      "tool_name": "issue_refund",
+      "arguments": {
+        "order_id": "ORD-100048",
+        "refund_inr": 128.25
+      },
+      "observation": {
+        "refund_inr": 128.25
       }
     }
   ],
   "tools_executed": [
     "get_order",
     "search_policy",
-    "calculate_refund"
+    "calculate_refund",
+    "issue_refund"
   ]
 }
