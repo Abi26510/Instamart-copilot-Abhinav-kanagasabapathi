@@ -67,6 +67,12 @@ Follow these numbered steps to reproduce the entire environment, synthetic data 
    python analysis.py
    ```
 
+10. **Train Customer Segmentation & Lapse Prediction Models**:
+    Runs RFM K-Means clustering, PCA, leakage-free feature engineering, grid searches for Logistic Regression and Random Forest, class-balance experiment, and exports models/retention list:
+    ```bash
+    python train_models.py
+    ```
+
 ---
 
 ## 2. Raw Data Audit
@@ -301,3 +307,159 @@ The pair with the largest correlation in absolute value is **`order_amount` with
 
 4. **What relationships exist between variables?**  
    The largest correlation in absolute value is between `order_amount` and `discount_pct` at $r \approx -0.095$, slightly exceeding `order_amount` and `quantity` at $r \approx +0.087$. These near-zero associations indicate that order amounts, discounting, and fulfillment times vary independently. Crucially, a correlation of this size does not establish causation.
+
+---
+
+## 7. Customer Segmentation & RFM Clustering (Part B)
+
+### (a) Whole-Window RFM Table (Snapshot: 2025-10-01 00:00:00)
+
+RFM metrics were calculated across all 1,175 customers with at least one completed order:
+- **Customer Count**: 1,175 active customers.
+- **Recency** (`days`): Median = 19 days, Minimum = 0 days, Maximum = 180 days.
+- **Frequency** (`orders`): Mean = 9.46 orders, Minimum = 1 order, Maximum = 33 orders.
+- **Monetary** (`order_amount`): Mean = INR 2,552.06, Minimum = INR 12.00, Maximum = INR 14,766.55.
+
+### (b) K-Means Clustering ($K \in [2, 8]$)
+
+Standardized RFM dimensions (`StandardScaler`) were clustered across $K \in \{2, 3, 4, 5, 6, 7, 8\}$ using `KMeans(n_clusters=K, n_init=10, random_state=42)`:
+
+| Clusters ($K$) | Inertia | Silhouette Score |
+| :---: | :---: | :---: |
+| $K=2$ | 1820.8 | 0.465 |
+| $K=3$ | 1268.2 | 0.445 |
+| **$K=4$** | **743.1** | **0.526** (Optimal Peak) |
+| $K=5$ | 617.4 | 0.480 |
+| $K=6$ | 503.2 | 0.482 |
+| $K=7$ | 408.5 | 0.416 |
+| $K=8$ | 366.5 | 0.412 |
+
+#### Why $K=8$ Inertia Cannot Alone Pick $K$
+> In K-means, inertia measures the within-cluster sum of squared distances to centroids. As $K$ increases, centroids proliferate and lie closer to each data point by mathematical necessity, eventually reaching zero when $K$ equals the sample size $N$. Consequently, a strictly monotonic decline in inertia does not denote superior cluster quality; optimal $K$ must balance geometric compactness with model parsimony by identifying where marginal inertia gains diminish (the elbow) alongside maximum silhouette separation and business interpretability.
+
+$K=4$ was selected because it forms the clear elbow inflection, yields the highest silhouette score (0.526), and provides crisp, actionable commercial personas.
+
+### (c) Segment Profiling & PCA Projection ($K=4$)
+
+> **Note on Cluster Numbers**: Cluster IDs (0, 1, 2, 3) are arbitrary algorithmic partition labels with no inherent ordinal hierarchy.
+
+| Segment ID | Persona Name | Size (Customers) | Mean Recency (days) | Mean Frequency (orders) | Mean Monetary (INR) | `is_premium` | Recommended Marketing Action |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **1** | **High-Value Premium** | 138 | 24.1 | 6.8 | **INR 7,129.70** | **True** | Dedicated VIP support, exclusive electronics pre-orders, and zero-fee express slots. |
+| **2** | **Loyal Power Shoppers** | 419 | 8.8 | 19.4 | INR 3,410.02 | False | Subscription delivery pass (unlimited grocery delivery) and cross-category discovery coupons. |
+| **0** | **Occasional Low-Spend** | 436 | 28.9 | 3.8 | INR 1,057.62 | False | Weekend basket threshold incentives (e.g., INR 50 off on INR 399) to build repeat habit. |
+| **3** | **At-Risk / Dormant** | 182 | 109.0 | 2.2 | INR 685.99 | False | Aggressive win-back credits with 48-hour expiration and root-cause churn surveys. |
+
+- **PCA Dimensionality Reduction**: `PCA(n_components=2, random_state=42)` applied to scaled RFM captures:
+  - $\text{PC}_1$: **63.43%** explained variance.
+  - $\text{PC}_2$: **21.80%** explained variance.
+  - **Total 2D Explained Variance**: **85.23%** (Reference: ~0.852).
+- **Exported Dataset**: Saved to [`outputs/customer_segments.csv`](file:///A:/Capstone%20project/instamart-copilot/outputs/customer_segments.csv) (`customer_id`, `recency`, `frequency`, `monetary`, `segment_id`, `segment_name`, `is_premium`).
+
+---
+
+## 8. Customer Lapse Prediction & Modeling (Part B)
+
+### (a) Lapse Problem Formulation & Strict Leakage Prevention
+
+- **Temporal Cutoff**: `2025-09-01 00:00:00`.
+- **Cohort**: All 1,156 customers who completed at least one order strictly *before* the cutoff date.
+- **Target Label (`lapsed`)**: `1` if the customer placed **zero completed orders** between `2025-09-01` and `2025-09-30`, and `0` if active.
+  - Cohort size: 1,156 customers.
+  - Lapsed count: 443 customers (**38.32%** churn rate).
+- **Leakage Prevention Guarantees**:
+  - **Zero Forward-Looking Data**: No orders, cancellations, or delivery records dated on or after `2025-09-01` were used in feature engineering.
+  - **No Segment Label Contamination**: Segment IDs from Task 3 were strictly omitted from feature matrices.
+  - **Strict Train-Only Fitting**: All preprocessing transformers (`StandardScaler`, `OneHotEncoder`) and oversampling routines were fitted **strictly on training rows only** inside scikit-learn `Pipeline` objects. The test partition was never exposed to fitting.
+- **Dataset Split**: Stratified 80/20 train/test split (`random_state=42`):
+  - Training Set: 924 rows (570 retained, 354 lapsed).
+  - Test Set: 232 rows (143 retained, 89 lapsed).
+
+### (b) Preprocessing & Scaler Mean Comparison
+
+Feature columns were preprocessed without missing values (0 nulls verified across all engineered attributes):
+- **Numerical Features** (StandardScaler): `recency`, `frequency`, `monetary`, `avg_discount_pct`, `cancellation_rate`, `avg_delivery_minutes`, `age`, `tenure_days`.
+- **Categorical Features** (OneHotEncoder, `drop="first"`): `city`, `gender`, `favourite_category`.
+- **Learned Scaler Comparison**:
+  - Learned Training Scaler Mean (`frequency`): **8.1147**
+  - Full-Cohort Mean (`frequency`): **8.0285**
+  - *Reason for difference*: The training scaler calculates statistics exclusively on the 80% training partition (924 rows) to strictly prevent test-set distribution leakage, introducing natural sample-variance deviation from the full 1,156-row population.
+
+### (c) Model Training, Hyperparameter Tuning & Test Performance
+
+#### Baseline Predictor
+- Rule: Always predict the majority negative class (`0` / Not Lapsed).
+- Test Accuracy: **61.6%**
+- Lapsed-Class F1 Score: **0.000** (`zero_division=0`)
+
+#### Tuned Models Evaluation (Targeting Lapsed Class = 1)
+
+1. **Logistic Regression** (`GridSearchCV` over $C \in \{0.01, 0.1, 1, 10, 100\}$, 5-fold CV):
+   - Best Parameter: $C = 100$ (CV F1 = 0.6506; comparable to $C=1$).
+   - Test Confusion Matrix: $\begin{bmatrix} 111 & 32 \\ 31 & 58 \end{bmatrix}$
+   - Test Precision: **0.6444** | Test Recall: **0.6517** | Test F1: **0.6480**
+
+2. **Random Forest Classifier** (`GridSearchCV` over `max_depth` $\in \{3, 5, 8\}$ and `min_samples_leaf` $\in \{5, 10, 20\}$, 45 fits):
+   - Best Parameters: `max_depth = 8`, `min_samples_leaf = 10` (CV F1 = 0.6811).
+   - Test Confusion Matrix: $\begin{bmatrix} 113 & 30 \\ 31 & 58 \end{bmatrix}$
+   - Test Precision: **0.6591** | Test Recall: **0.6517** | Test F1: **0.6554**
+
+#### Model Selection Justification
+> Random Forest was selected as our final production model because it achieved the highest cross-validated F1 (0.6811) and test F1 (0.6554), comfortably exceeding the 0.55 benchmark and outperforming Logistic Regression. In quick commerce, failing to identify an actually lapsing customer (False Negative) forfeits their entire recurring lifetime value and demands steep customer acquisition expenditures to replace. Conversely, mistakenly flagging a loyal customer (False Positive) merely triggers an inexpensive retention nudge or coupon that often spurs incremental order volume. Random Forest effectively captures non-linear interactions between delivery delays, order frequencies, and cancellation rates, delivering optimal balance between churn coverage and targeting precision.
+
+### (d) Class-Balance Oversampling Experiment
+
+To evaluate class imbalance sensitivity, the minority lapsed class was oversampled **only in the training set** (`resample(replace=True, n_samples=570, random_state=42)`), creating a balanced 570:570 training distribution (1,140 rows). The tuned Logistic Regression was refitted on this balanced training set and evaluated on the **original, unchanged 232-row test set**:
+
+| Metric | Unbalanced LR | Balanced LR (Oversampled) | Delta |
+| :--- | :---: | :---: | :---: |
+| **Precision** | 0.6444 | 0.6000 | -0.0444 |
+| **Recall** | **0.6517** | **0.8090** | **+0.1573** (+15.7 pp) |
+| **F1 Score** | 0.6480 | 0.6890 | +0.0410 |
+
+> **Key Takeaway**: Recall moved the most, jumping by **+15.7 percentage points** from 0.6517 to 0.8090 while precision remained resilient near 0.6000. For the retention marketing team, this demonstrates that oversampling enables campaigns to intercept over **80% of all potential churners** before departure, accepting a minor rise in promotional outreach costs to dramatically curb customer attrition.
+
+### (e) Interpretability & Model Persistence
+
+#### Top 5 Random Forest Feature Importances
+1. **`frequency`** (0.2796): Historical order cadence is the strongest retention signal; habitual buyers demonstrate entrenched loyalty.
+2. **`monetary`** (0.2712): Total financial spend reflects platform investment; larger lifetime spenders exhibit lower structural churn propensity.
+3. **`recency`** (0.1151): Expanding time since the last transaction serves as the earliest warning sign of impending churn.
+4. **`avg_delivery_minutes`** (0.0613): Chronic fulfillment delays diminish trust and directly accelerate platform abandonment.
+5. **`cancellation_rate`** (0.0523): Operational friction and unfulfilled orders provoke frustration and churn.
+
+#### Directional Signs in Logistic Regression
+- **`frequency`** ($-1.6982$, Negative): Each additional pre-cutoff order significantly lowers the log-odds of lapsing.
+- **`avg_delivery_minutes`** ($+0.0785$, Positive): Slower delivery times increase the log-odds of customer lapse.
+- **`recency`** ($+0.0396$, Positive): Higher days since last order increases customer lapse probability.
+
+#### Model Persistence & Reproduction
+The trained Random Forest pipeline was saved to [`outputs/lapse_model.joblib`](file:///A:/Capstone%20project/instamart-copilot/outputs/lapse_model.joblib). Reloading and testing against `X_test` confirmed **100% exact prediction reproduction**.
+
+#### Top 10 High-Risk Premium Retention List
+Scoring test-set customers in the Premium segment yielded the prioritized outreach list saved to [`outputs/retention_list.csv`](file:///A:/Capstone%20project/instamart-copilot/outputs/retention_list.csv):
+
+| Customer ID | Predicted Lapse Probability | Actually Lapsed |
+| :---: | :---: | :---: |
+| `C0862` | 0.4910 | 0 |
+| `C1112` | 0.4841 | 0 |
+| `C0060` | 0.4798 | 0 |
+| `C0802` | 0.4796 | 0 |
+| `C1008` | 0.4778 | 0 |
+| `C1000` | 0.4624 | 0 |
+| `C0525` | 0.4597 | 1 |
+| `C0133` | 0.4562 | 0 |
+| `C0267` | 0.4525 | 0 |
+| `C0167` | 0.4522 | 0 |
+
+---
+
+## 9. Limitations and Next Steps
+
+- **Post-Hoc Whole-Window Segment Labeling**:
+  > The Premium flag is derived from the post-hoc whole-window RFM segmentation (Task 3), which incorporates September order activity that also defines the lapse label; consequently, the retention list is illustrative and not a leakage-free evaluation. (The model's own features strictly utilize orders prior to the 2025-09-01 cutoff, ensuring model training remains uncorrupted.)
+- **Next Operational Steps**:
+  - Incorporate live session telemetry (app opens, cart abandonment events) into real-time lapse scoring.
+  - Implement dynamic coupon allocation testing based on predicted lapse probabilities.
+  - Connect `outputs/customer_segments.csv` to customer support ticket routing (Part C).
+
