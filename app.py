@@ -902,9 +902,20 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
         
         df_ret = load_retention_list()
         if not df_ret.empty:
-            df_ret["lapse_probability"] = df_ret["lapse_probability"].round(4)
-            df_ret["pre_monetary"] = df_ret["pre_monetary"].apply(lambda v: f"INR {v:,.2f}")
-            st.dataframe(df_ret, use_container_width=True)
+            df_ret_display = df_ret.copy()
+            if "lapse_probability" in df_ret_display.columns:
+                df_ret_display["lapse_probability"] = df_ret_display["lapse_probability"].round(4)
+            
+            # Enrich with spend if available from segments
+            if "pre_monetary" in df_ret_display.columns:
+                df_ret_display["pre_monetary"] = df_ret_display["pre_monetary"].apply(lambda v: f"INR {v:,.2f}" if pd.notnull(v) else "N/A")
+            elif not df_seg.empty and "monetary" in df_seg.columns:
+                df_merged = df_ret_display.merge(df_seg[["customer_id", "monetary", "recency", "frequency"]], on="customer_id", how="left")
+                if "monetary" in df_merged.columns:
+                    df_merged["total_spend"] = df_merged["monetary"].apply(lambda v: f"INR {v:,.2f}" if pd.notnull(v) else "N/A")
+                    df_ret_display = df_merged.drop(columns=["monetary"], errors="ignore")
+            
+            st.dataframe(df_ret_display, use_container_width=True)
         else:
             st.info("Retention list not generated yet.")
         st.markdown('</div>', unsafe_allow_html=True)
