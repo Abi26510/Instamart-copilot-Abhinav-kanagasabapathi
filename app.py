@@ -324,7 +324,7 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # ------------------------------------------------------------------------------
 # Data Cache Helpers
 # ------------------------------------------------------------------------------
-@st.cache_data
+@st.cache_resource
 def get_db_connection():
     db_path = "data/instamart.db"
     return sqlite3.connect(db_path, check_same_thread=False)
