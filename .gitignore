@@ -17,5 +17,7 @@ __pycache__/
 # IDE / OS
 .vscode/
 .idea/
+.cursor/
+.gemini/
 .DS_Store
 Thumbs.db

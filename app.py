@@ -1,20 +1,22 @@
 """
 ================================================================================
-Instamart Copilot: Unified Intelligence Dashboard & Operations Center
+Instamart Sovereign: Unified Intelligence Dashboard & Operations Center
 ================================================================================
-An end-to-end interactive visual guide, analytics studio, and real-time execution
-suite for quick-commerce data quality, customer intelligence, ticket triage,
-and autonomous ReAct refund operations.
+An institutional executive command center, real-time analytics studio, and
+autonomous execution suite for quick-commerce data quality, customer intelligence,
+support ticket triage, and policy-grounded ReAct refund operations.
 
-High-Contrast Executive Color Palette:
-  - Slate Charcoal (Headings & Shadows):  #0F172A (Deep Slate 900)
-  - Deep Royal Blue (Primary Brand):       #1E40AF / #2563EB (Electric Blue)
-  - Emerald Teal (Success / Verification): #059669 (Emerald 600)
-  - Coral Rose (Priority & Alerts):       #E11D48 (Rose 600)
-  - Amber Gold (Mid Tiers & Warmth):       #D97706 (Amber 600)
-  - Clean Canvas Background:              #F8FAFC (Slate 50)
-  - Card Surface (Maximum Contrast):      #FFFFFF (Pure White)
-Design Aesthetic: High-Contrast Isomorphic / 2.5D Retro-Modern Tech Dashboard
+Executive Sovereign Color Palette:
+  - Midnight Obsidian (Canvas Root):       #080C14 (Deep 950)
+  - Slate Obsidian (Card Surfaces):        #0F172A (Deep Slate 900)
+  - Luminous Sapphire (Primary Accent):    #3B82F6 / #60A5FA (Electric Blue)
+  - Sovereign Emerald (SLA & Completed):   #10B981 / #34D399 (Emerald 500)
+  - Sovereign Rose (Alerts & Churn):       #F43F5E / #FB7185 (Rose 500)
+  - Burnished Amber (VIP Champions):       #F59E0B / #FBBF24 (Amber 500)
+  - Text Primary (Crisp Alabaster):        #F8FAFC (Slate 50)
+  - Text Secondary (Platinum Slate):       #CBD5E1 (Slate 300)
+  - Text Muted (Cool Slate):               #94A3B8 (Slate 400)
+Design Aesthetic: High-Profile Executive Command Suite (Linear / Stripe Sigma)
 ================================================================================
 """
 
@@ -40,95 +42,107 @@ import triage
 # Streamlit Page Configuration
 # ------------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Instamart Copilot | AI Operations Suite",
+    page_title="Instamart Sovereign | AI Operations Center",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ------------------------------------------------------------------------------
-# Custom CSS: High-Contrast Isomorphic Design System
+# Custom CSS: High-Profile Executive Sovereign Design System
 # ------------------------------------------------------------------------------
 CUSTOM_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-    --brand-dark: #0F172A;
-    --brand-blue: #2563EB;
-    --brand-navy: #1E3A8A;
-    --brand-emerald: #059669;
-    --brand-rose: #E11D48;
-    --brand-amber: #D97706;
-    --bg-canvas: #F8FAFC;
-    --card-bg: #FFFFFF;
-    --text-primary: #0F172A;
-    --text-secondary: #334155;
-    --text-muted: #64748B;
+    --bg-canvas: #080C14;
+    --surface-card: rgba(15, 23, 42, 0.75);
+    --surface-card-hover: rgba(30, 41, 59, 0.7);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --surface-border-top: rgba(255, 255, 255, 0.14);
+    --brand-sapphire: #3B82F6;
+    --brand-sapphire-light: #60A5FA;
+    --brand-emerald: #10B981;
+    --brand-rose: #F43F5E;
+    --brand-amber: #F59E0B;
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
 }
 
-/* Universal Typography & High-Contrast Overrides */
+/* Universal Typography & Executive Dark Overrides */
 html, body, [class*="css"], .stApp {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     background-color: var(--bg-canvas) !important;
     color: var(--text-primary) !important;
 }
 
-/* Force dark, crisp readable text on all regular elements */
+/* Ambient Canvas Grid Matrix Pattern */
+.stApp {
+    background-color: #080C14 !important;
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(rgba(59, 130, 246, 0.03) 1px, #080C14 1px) !important;
+    background-size: 24px 24px, 72px 72px !important;
+    background-position: 0 0, 12px 12px !important;
+}
+
+/* Force crisp, legible text across all standard elements */
 p, span, div, li, td, th, label, [data-testid="stMarkdownContainer"] p {
-    color: var(--text-primary) !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.94rem !important;
+    line-height: 1.6 !important;
 }
 
 h1, h2, h3, h4, h5, h6, strong, b {
-    color: var(--brand-dark) !important;
-    font-weight: 800 !important;
+    color: var(--text-primary) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em !important;
 }
 
-/* Background canvas grid pattern */
-.stApp {
-    background-color: #F8FAFC !important;
-    background-image: 
-        radial-gradient(#CBD5E1 1px, transparent 1px),
-        radial-gradient(#E2E8F0 1px, #F8FAFC 1px) !important;
-    background-size: 20px 20px !important;
-    background-position: 0 0, 10px 10px !important;
-}
-
-/* Isomorphic elevated card with 2.5D solid shadow */
+/* Executive Glassmorphic Card */
 .iso-card {
-    background: #FFFFFF !important;
-    border: 2px solid #0F172A !important;
-    border-radius: 14px !important;
-    box-shadow: 5px 5px 0px #0F172A !important;
-    padding: 24px !important;
+    background: var(--surface-card) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-top: 1px solid var(--surface-border-top) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+    padding: 26px !important;
     margin-bottom: 24px !important;
-    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 
 .iso-card:hover {
-    transform: translate(-2px, -2px) !important;
-    box-shadow: 7px 7px 0px #0F172A !important;
+    transform: translateY(-2px) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px rgba(59, 130, 246, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .iso-card h3, .iso-card h4 {
-    color: #0F172A !important;
+    color: #F8FAFC !important;
     margin-top: 4px !important;
+    font-weight: 700 !important;
 }
 
 .iso-card p, .iso-card li {
-    color: #334155 !important;
-    font-size: 0.95rem !important;
-    line-height: 1.5 !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.93rem !important;
+    line-height: 1.55 !important;
 }
 
-/* Isomorphic Hero Banner (Dark with bright white text) */
+/* Executive Hero Banner */
 .iso-hero {
-    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%) !important;
-    border: 3px solid #0F172A !important;
-    border-radius: 16px !important;
-    box-shadow: 6px 6px 0px #2563EB !important;
-    padding: 30px 34px !important;
-    color: #F1F5F9 !important;
+    background: linear-gradient(135deg, rgba(11, 17, 32, 0.95) 0%, rgba(15, 23, 42, 0.9) 60%, rgba(30, 58, 138, 0.35) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(59, 130, 246, 0.25) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+    padding: 32px 36px !important;
+    color: #F8FAFC !important;
     margin-bottom: 24px !important;
     position: relative !important;
     overflow: hidden !important;
@@ -139,62 +153,70 @@ h1, h2, h3, h4, h5, h6, strong, b {
 div.iso-hero h1 {
     color: #FFFFFF !important;
     font-weight: 800 !important;
-    font-size: 2.1rem !important;
-    margin-bottom: 8px !important;
-    text-shadow: 2px 2px 0px #0F172A !important;
+    font-size: 2.15rem !important;
+    margin-bottom: 10px !important;
+    letter-spacing: -0.025em !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
 }
 
 .iso-hero p,
 .iso-hero p * {
-    color: #F1F5F9 !important;
+    color: #CBD5E1 !important;
     font-size: 1.02rem !important;
-    max-width: 820px !important;
+    max-width: 840px !important;
     margin-bottom: 0 !important;
+    line-height: 1.6 !important;
 }
 
-/* Isomorphic KPI box */
+/* Executive Telemetry KPI Box */
 .iso-metric {
-    background: #F1F5F9 !important;
-    border: 2px solid #0F172A !important;
-    border-radius: 12px !important;
-    box-shadow: 4px 4px 0px #2563EB !important;
-    padding: 16px 18px !important;
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-top: 1px solid var(--surface-border-top) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.06) !important;
+    padding: 18px 20px !important;
     text-align: center !important;
-    transition: all 0.15s ease !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .iso-metric:hover {
-    transform: translate(-2px, -2px) !important;
-    box-shadow: 6px 6px 0px #2563EB !important;
+    transform: translateY(-2px) !important;
+    border-color: rgba(59, 130, 246, 0.35) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 12px rgba(59, 130, 246, 0.12) !important;
 }
 
 .iso-metric-val {
-    font-size: 1.8rem !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 1.75rem !important;
     font-weight: 800 !important;
-    color: #1E3A8A !important;
+    color: #F8FAFC !important;
     line-height: 1.1 !important;
     margin-bottom: 4px !important;
+    letter-spacing: -0.02em !important;
 }
 
 .iso-metric-label {
-    font-size: 0.82rem !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    color: #475569 !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
 }
 
-/* High-Contrast Solid Badges */
+/* Refined Pill Badges */
 .iso-badge, 
 .iso-hero .iso-badge, 
 .iso-card .iso-badge,
 span.iso-badge {
-    display: inline-block !important;
-    padding: 5px 14px !important;
-    font-size: 0.78rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.06em !important;
-    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 4px 12px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    border-radius: 9999px !important;
     margin-right: 8px !important;
     margin-bottom: 6px !important;
     text-transform: uppercase !important;
@@ -202,15 +224,15 @@ span.iso-badge {
     vertical-align: middle !important;
 }
 
-/* Badge Rose / Coral */
+/* Badge Rose */
 .badge-rose, 
 .iso-hero .badge-rose, 
 .iso-card .badge-rose,
 span.badge-rose {
-    background-color: #E11D48 !important;
-    color: #FFFFFF !important;
-    border: 1.5px solid #0F172A !important;
-    box-shadow: 2px 2px 0px #0F172A !important;
+    background-color: rgba(244, 63, 94, 0.15) !important;
+    color: #FB7185 !important;
+    border: 1px solid rgba(244, 63, 94, 0.35) !important;
+    box-shadow: none !important;
 }
 
 /* Badge Blue */
@@ -218,10 +240,10 @@ span.badge-rose {
 .iso-hero .badge-blue, 
 .iso-card .badge-blue,
 span.badge-blue {
-    background-color: #2563EB !important;
-    color: #FFFFFF !important;
-    border: 1.5px solid #0F172A !important;
-    box-shadow: 2px 2px 0px #0F172A !important;
+    background-color: rgba(59, 130, 246, 0.15) !important;
+    color: #60A5FA !important;
+    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+    box-shadow: none !important;
 }
 
 /* Badge Emerald */
@@ -229,10 +251,10 @@ span.badge-blue {
 .iso-hero .badge-emerald, 
 .iso-card .badge-emerald,
 span.badge-emerald {
-    background-color: #059669 !important;
-    color: #FFFFFF !important;
-    border: 1.5px solid #0F172A !important;
-    box-shadow: 2px 2px 0px #0F172A !important;
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34D399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+    box-shadow: none !important;
 }
 
 /* Badge Dark / Slate */
@@ -240,67 +262,72 @@ span.badge-emerald {
 .iso-hero .badge-dark, 
 .iso-card .badge-dark,
 span.badge-dark {
-    background-color: #0F172A !important;
-    color: #FFFFFF !important;
-    border: 1.5px solid #38BDF8 !important;
-    box-shadow: 2px 2px 0px #38BDF8 !important;
+    background-color: rgba(30, 41, 59, 0.6) !important;
+    color: #CBD5E1 !important;
+    border: 1px solid rgba(148, 163, 184, 0.25) !important;
+    box-shadow: none !important;
 }
 
-/* Action Buttons */
+/* High-Profile Action Buttons */
 .stButton > button {
-    background: #2563EB !important;
+    background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%) !important;
     color: #FFFFFF !important;
-    font-weight: 700 !important;
-    border: 2px solid #0F172A !important;
-    border-radius: 8px !important;
-    box-shadow: 3px 3px 0px #0F172A !important;
-    transition: all 0.15s ease !important;
-    padding: 8px 20px !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.2s ease !important;
+    padding: 8px 22px !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.01em !important;
 }
 
 .stButton > button:hover {
-    transform: translate(-2px, -2px) !important;
-    box-shadow: 5px 5px 0px #0F172A !important;
-    background: #1D4ED8 !important;
+    background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%) !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.45) !important;
+    transform: translateY(-1px) !important;
     color: #FFFFFF !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .stButton > button:active {
-    transform: translate(2px, 2px) !important;
-    box-shadow: 1px 1px 0px #0F172A !important;
+    transform: translateY(1px) !important;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.2) !important;
 }
 
 /* Inputs, Textareas, Selectboxes */
 input, textarea, select, [data-baseweb="select"] {
-    background-color: #FFFFFF !important;
-    color: #0F172A !important;
-    border: 2px solid #94A3B8 !important;
-    border-radius: 8px !important;
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
     font-weight: 500 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
 input:focus, textarea:focus {
-    border-color: #2563EB !important;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+    border-color: #3B82F6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
 }
 
 /* Sidebar Styling */
 [data-testid="stSidebar"] {
-    background-color: #FFFFFF !important;
-    border-right: 2px solid #CBD5E1 !important;
-    box-shadow: 4px 0px 0px rgba(15, 23, 42, 0.05) !important;
+    background-color: #0B0F19 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 4px 0px 24px rgba(0, 0, 0, 0.5) !important;
 }
 
 [data-testid="stSidebar"] * {
-    color: #0F172A !important;
+    color: #F8FAFC !important;
 }
 
 /* Native Code Blocks */
 pre, code {
     font-family: 'JetBrains Mono', monospace !important;
-    background-color: #0F172A !important;
-    color: #F8FAFC !important;
-    border-radius: 6px !important;
+    background-color: #0B0F19 !important;
+    color: #60A5FA !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
 }
 
 pre code, pre span {
@@ -309,13 +336,45 @@ pre code, pre span {
 
 /* Metric Widgets */
 [data-testid="stMetricValue"] {
-    color: #1E3A8A !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    color: #F8FAFC !important;
     font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
 }
 
 [data-testid="stMetricLabel"] {
-    color: #475569 !important;
-    font-weight: 700 !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.06em !important;
+}
+
+/* Tabs Styling */
+[data-baseweb="tab-list"] {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    gap: 8px !important;
+}
+
+[data-baseweb="tab"] {
+    color: #94A3B8 !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 8px 16px !important;
+}
+
+[aria-selected="true"] {
+    color: #60A5FA !important;
+    border-bottom: 2px solid #3B82F6 !important;
+}
+
+/* Streamlit Dataframe Overrides */
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
 }
 </style>
 """
@@ -378,59 +437,87 @@ def load_retention_list():
 # SVG Isomorphic Graphics Generator (High-Contrast Theme)
 # ------------------------------------------------------------------------------
 def render_isomorphic_header_svg():
-    """Renders a 2.5D Isometric geometric graphic with crisp, high-contrast colors."""
+    """Renders a high-profile executive architectural pipeline blueprint with illuminated nodes."""
     return """
-    <svg width="100%" height="135" viewBox="0 0 900 135" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Ground Isometric Grid -->
-      <g opacity="0.35">
-        <path d="M50 65 L450 10 L850 65 L450 120 Z" fill="#2563EB" fill-opacity="0.06" stroke="#2563EB" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <line x1="150" y1="50" x2="550" y2="105" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="250" y1="35" x2="650" y2="90" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="350" y1="20" x2="750" y2="75" stroke="#94A3B8" stroke-width="1" stroke-dasharray="2 4"/>
+    <svg width="100%" height="150" viewBox="0 0 940 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gridGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.18" />
+          <stop offset="100%" stop-color="#1E293B" stop-opacity="0.0" />
+        </linearGradient>
+        <linearGradient id="nodeBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3B82F6" />
+          <stop offset="100%" stop-color="#1D4ED8" />
+        </linearGradient>
+        <linearGradient id="nodeEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#10B981" />
+          <stop offset="100%" stop-color="#047857" />
+        </linearGradient>
+        <linearGradient id="nodeRose" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F43F5E" />
+          <stop offset="100%" stop-color="#BE123C" />
+        </linearGradient>
+        <linearGradient id="nodePurple" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8B5CF6" />
+          <stop offset="100%" stop-color="#6D28D9" />
+        </linearGradient>
+        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      <!-- Base Isometric Ground Grid -->
+      <path d="M 40 75 L 470 15 L 900 75 L 470 135 Z" fill="url(#gridGrad)" stroke="#3B82F6" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="4 4" />
+
+      <!-- Optical Laser Conduits -->
+      <path d="M 210 75 L 340 75" stroke="#3B82F6" stroke-width="2" stroke-dasharray="6 4" />
+      <circle cx="275" cy="75" r="3.5" fill="#60A5FA" filter="url(#softGlow)" />
+
+      <path d="M 440 75 L 570 75" stroke="#10B981" stroke-width="2" stroke-dasharray="6 4" />
+      <circle cx="505" cy="75" r="3.5" fill="#34D399" filter="url(#softGlow)" />
+
+      <path d="M 670 75 L 800 75" stroke="#F43F5E" stroke-width="2" stroke-dasharray="6 4" />
+      <circle cx="735" cy="75" r="3.5" fill="#FB7185" filter="url(#softGlow)" />
+
+      <!-- Node 1: Part A Data Pipeline -->
+      <g transform="translate(110, 35)">
+        <rect x="0" y="0" width="100" height="78" rx="14" fill="#0F172A" stroke="#3B82F6" stroke-width="1.5" filter="url(#softGlow)" />
+        <rect x="0" y="0" width="100" height="24" rx="14" fill="url(#nodeBlue)" />
+        <rect x="0" y="10" width="100" height="14" fill="url(#nodeBlue)" />
+        <text x="50" y="16" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" text-anchor="middle" letter-spacing="0.08em">PART A</text>
+        <text x="50" y="45" fill="#F8FAFC" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Data Pipeline</text>
+        <text x="50" y="62" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="8.5" text-anchor="middle">instamart.db</text>
       </g>
-      
-      <!-- Cube 1: Data Pipeline (Part A) -->
-      <g transform="translate(140, 40)">
-        <polygon points="0,0 35,-20 70,0 35,20" fill="#3B82F6" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="0,0 35,20 35,55 0,35" fill="#1E40AF" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="35,20 70,0 70,35 35,55" fill="#172554" stroke="#0F172A" stroke-width="2"/>
-        <text x="35" y="4" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">DATA</text>
+
+      <!-- Node 2: Part B Customer Modeling -->
+      <g transform="translate(340, 35)">
+        <rect x="0" y="0" width="100" height="78" rx="14" fill="#0F172A" stroke="#10B981" stroke-width="1.5" filter="url(#softGlow)" />
+        <rect x="0" y="0" width="100" height="24" rx="14" fill="url(#nodeEmerald)" />
+        <rect x="0" y="10" width="100" height="14" fill="url(#nodeEmerald)" />
+        <text x="50" y="16" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" text-anchor="middle" letter-spacing="0.08em">PART B</text>
+        <text x="50" y="45" fill="#F8FAFC" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" text-anchor="middle">RFM & Lapse</text>
+        <text x="50" y="62" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="8.5" text-anchor="middle">K=4 Clusters</text>
       </g>
 
-      <!-- Conduit 1 -> 2 -->
-      <path d="M210 65 L320 65" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="265" cy="65" r="4" fill="#2563EB"/>
-
-      <!-- Cube 2: Intelligence & RFM (Part B) -->
-      <g transform="translate(320, 25)">
-        <polygon points="0,0 40,-22 80,0 40,22" fill="#10B981" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="0,0 40,22 40,65 0,43" fill="#059669" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="40,22 80,0 80,43 40,65" fill="#064E3B" stroke="#0F172A" stroke-width="2"/>
-        <text x="40" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">RFM ML</text>
+      <!-- Node 3: Part C Ticket Triage -->
+      <g transform="translate(570, 35)">
+        <rect x="0" y="0" width="100" height="78" rx="14" fill="#0F172A" stroke="#F43F5E" stroke-width="1.5" filter="url(#softGlow)" />
+        <rect x="0" y="0" width="100" height="24" rx="14" fill="url(#nodeRose)" />
+        <rect x="0" y="10" width="100" height="14" fill="url(#nodeRose)" />
+        <text x="50" y="16" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" text-anchor="middle" letter-spacing="0.08em">PART C</text>
+        <text x="50" y="45" fill="#F8FAFC" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" text-anchor="middle">Safe Triage</text>
+        <text x="50" y="62" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="8.5" text-anchor="middle">Regex Guard</text>
       </g>
 
-      <!-- Conduit 2 -> 3 -->
-      <path d="M400 55 L510 55" stroke="#E11D48" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="455" cy="55" r="4" fill="#E11D48"/>
-
-      <!-- Cube 3: Triage Guardrails (Part C) -->
-      <g transform="translate(510, 35)">
-        <polygon points="0,0 36,-20 72,0 36,20" fill="#F43F5E" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="0,0 36,20 36,55 0,35" fill="#E11D48" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="36,20 72,0 72,35 36,55" fill="#881337" stroke="#0F172A" stroke-width="2"/>
-        <text x="36" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">TRIAGE</text>
-      </g>
-
-      <!-- Conduit 3 -> 4 -->
-      <path d="M582 62 L690 62" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 6"/>
-      <circle cx="636" cy="62" r="4" fill="#7C3AED"/>
-
-      <!-- Cube 4: ReAct Agent & RAG (Part D) -->
-      <g transform="translate(690, 20)">
-        <polygon points="0,0 42,-24 84,0 42,24" fill="#8B5CF6" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="0,0 42,24 42,70 0,46" fill="#7C3AED" stroke="#0F172A" stroke-width="2"/>
-        <polygon points="42,24 84,0 84,46 42,70" fill="#4C1D95" stroke="#0F172A" stroke-width="2"/>
-        <text x="42" y="5" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#FFFFFF" text-anchor="middle">AGENT</text>
+      <!-- Node 4: Part D ReAct Agent -->
+      <g transform="translate(800, 35)">
+        <rect x="0" y="0" width="100" height="78" rx="14" fill="#0F172A" stroke="#8B5CF6" stroke-width="1.5" filter="url(#softGlow)" />
+        <rect x="0" y="0" width="100" height="24" rx="14" fill="url(#nodePurple)" />
+        <rect x="0" y="10" width="100" height="14" fill="url(#nodePurple)" />
+        <text x="50" y="16" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" text-anchor="middle" letter-spacing="0.08em">PART D</text>
+        <text x="50" y="45" fill="#F8FAFC" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" text-anchor="middle">ReAct Agent</text>
+        <text x="50" y="62" fill="#94A3B8" font-family="'JetBrains Mono', monospace" font-size="8.5" text-anchor="middle">RAG Grounded</text>
       </g>
     </svg>
     """
@@ -440,78 +527,69 @@ def render_isomorphic_header_svg():
 # ------------------------------------------------------------------------------
 with st.sidebar:
     st.markdown("""
-    <div style="text-align: center; padding: 12px 0 16px 0;">
-        <div style="font-size: 2.2rem;">📦 ⚡ 🤖</div>
-        <h2 style="color: #0F172A; font-weight: 800; margin: 4px 0 0 0; letter-spacing: -0.02em;">INSTAMART</h2>
-        <div style="font-size: 0.8rem; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: 0.1em;">AI Operations Platform</div>
+    <div style="text-align: center; padding: 14px 0 18px 0;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); margin-bottom: 8px;">
+            <span style="font-size: 1.6rem;">📦</span>
+        </div>
+        <h2 style="color: #FFFFFF; font-weight: 800; margin: 4px 0 0 0; font-size: 1.25rem; letter-spacing: 0.02em;">INSTAMART </h2>
+        <div style="font-size: 0.72rem; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px;">AI Operations Center</div>
+        <div style="display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px; border-radius: 9999px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
+            <span style="font-size: 0.7rem; font-weight: 700; color: #34D399; letter-spacing: 0.04em;">SYSTEM ONLINE</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<hr style='margin: 4px 0 16px 0; border: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 4px 0 16px 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08);'>", unsafe_allow_html=True)
 
     app_mode = st.radio(
         "OPERATIONAL MODULES",
         [
-            "🏛️ Mission Control & Visual Guide",
-            "🔍 Part A: Data Pipeline & SQL Studio",
-            "🎯 Part B: Segmentation & Lapse AI",
-            "🛡️ Part C: Safe Ticket Triage Lab",
-            "🤖 Part D: Policy RAG & ReAct Agent",
-            "⚡ Project Execution Hub"
+            " Mission Control & Visual Guide",
+            " Part A: Data Pipeline & SQL Studio",
+            " Part B: Segmentation & Lapse AI",
+            " Part C: Safe Ticket Triage Lab",
+            " Part D: Policy RAG & ReAct Agent",
+            " Project Execution Hub"
         ],
         index=0
     )
 
-    st.markdown("<hr style='margin: 16px 0; border: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div style="background: #FFFFFF; border: 2px solid #0F172A; border-radius: 8px; padding: 12px; box-shadow: 3px 3px 0px #0F172A;">
-        <div style="font-size: 0.72rem; font-weight: 800; color: #0F172A; margin-bottom: 6px; text-transform: uppercase;">ACCESSIBILITY PALETTE</div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-            <div style="width: 22px; height: 22px; border-radius: 4px; background: #0F172A; border: 1px solid #0F172A;" title="#0F172A Slate 900"></div>
-            <div style="width: 22px; height: 22px; border-radius: 4px; background: #2563EB; border: 1px solid #0F172A;" title="#2563EB Electric Blue"></div>
-            <div style="width: 22px; height: 22px; border-radius: 4px; background: #059669; border: 1px solid #0F172A;" title="#059669 Emerald 600"></div>
-            <div style="width: 22px; height: 22px; border-radius: 4px; background: #E11D48; border: 1px solid #0F172A;" title="#E11D48 Rose 600"></div>
-        </div>
-        <div style="font-size: 0.75rem; color: #334155; margin-top: 8px; font-weight: 600;">System: <strong>WCAG AAA High Contrast</strong></div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 16px 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08);'>", unsafe_allow_html=True)
 
 
 # ==============================================================================
 # MODULE 1: MISSION CONTROL & VISUAL GUIDE
 # ==============================================================================
-if app_mode == "🏛️ Mission Control & Visual Guide":
+if app_mode == " Mission Control & Visual Guide":
     st.markdown("""
     <div class="iso-hero">
-        <span class="iso-badge badge-rose">ENTERPRISE PLATFORM</span>
-        <span class="iso-badge badge-blue">VERSION 2.0</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Instamart Customer Intelligence & Autonomous Operations</h1>
-        <p style="color: #F1F5F9 !important;">A mission-critical quick-commerce operations suite delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
+        <h1>Instamart Sovereign: Customer Intelligence & Autonomous Operations</h1>
+        <p>An institutional quick-commerce operations suite delivering clean relational data modeling, customer RFM clustering, predictive lapse mitigation, safe LLM support triage, and policy-grounded ReAct refund agents.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Isometric System Flow Graphic
-    st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-    st.markdown("### 📐 Isomorphic Architecture Pipeline")
+    # Architectural Pipeline Graphic
+     
+    st.markdown("### System Architecture Pipeline Blueprint")
     st.markdown(render_isomorphic_header_svg(), unsafe_allow_html=True)
     st.markdown("""
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 14px; text-align: center;">
-        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
-            <strong style="color: #1E40AF;">Part A: Data Foundation</strong><br>
-            <span style="font-size: 0.85rem; color: #475569;">Dirty raw audit, clean exports, SQLite instamart.db</span>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; text-align: left;">
+        <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px;">
+            <strong style="color: #60A5FA; font-size: 0.88rem;">Part A: Data Foundation</strong><br>
+            <span style="font-size: 0.82rem; color: #94A3B8;">Dirty raw audit, clean exports, indexed SQLite instamart.db</span>
         </div>
-        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
-            <strong style="color: #065F46;">Part B: Customer Modeling</strong><br>
-            <span style="font-size: 0.85rem; color: #475569;">RFM K-Means clustering, PCA, lapse predictive AI</span>
+        <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px;">
+            <strong style="color: #34D399; font-size: 0.88rem;">Part B: Customer Modeling</strong><br>
+            <span style="font-size: 0.82rem; color: #94A3B8;">RFM K-Means clustering (K=4), PCA, balanced lapse AI</span>
         </div>
-        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
-            <strong style="color: #9F1239;">Part C: Ticket Triage</strong><br>
-            <span style="font-size: 0.85rem; color: #475569;">Regex PII redaction, token budgets, queue routing</span>
+        <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px;">
+            <strong style="color: #FB7185; font-size: 0.88rem;">Part C: Safe Ticket Triage</strong><br>
+            <span style="font-size: 0.82rem; color: #94A3B8;">Regex PII redaction, token budgets, queue routing</span>
         </div>
-        <div style="background: #F8FAFC; border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 12px;">
-            <strong style="color: #5B21B6;">Part D: ReAct Agent</strong><br>
-            <span style="font-size: 0.85rem; color: #475569;">15-chunk TF-IDF RAG, SQLite tools, state checkpoints</span>
+        <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px;">
+            <strong style="color: #A78BFA; font-size: 0.88rem;">Part D: ReAct Agent</strong><br>
+            <span style="font-size: 0.82rem; color: #94A3B8;">15-chunk TF-IDF RAG, SQLite tools, state checkpoints</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -618,20 +696,20 @@ if app_mode == "🏛️ Mission Control & Visual Guide":
 # ==============================================================================
 # MODULE 2: PART A - DATA QUALITY & SQL STUDIO
 # ==============================================================================
-elif app_mode == "🔍 Part A: Data Pipeline & SQL Studio":
+elif app_mode == " Part A: Data Pipeline & SQL Studio":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-blue">PART A PIPELINE</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Data Cleaning, Relational Modeling & SQL Analytics</h1>
-        <p style="color: #F1F5F9 !important;">Audit dirty operational telemetry, enforce strict cleaning transforms, and query SQLite <code>data/instamart.db</code> across multi-table joins, CTEs, and window functions.</p>
+        <h1>Data Cleaning, Relational Modeling & SQL Analytics</h1>
+        <p>Audit dirty operational telemetry, enforce strict cleaning transforms, and query SQLite <code>data/instamart.db</code> across multi-table joins, CTEs, and window functions.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2, tab3 = st.tabs(["📋 Data Audit & Cleaning Checks", "🗄️ Database Table Explorer", "⚡ Interactive SQL Studio"])
+    tab1, tab2, tab3 = st.tabs([" Data Audit & Cleaning Checks", " Database Table Explorer", " Interactive SQL Studio"])
 
     with tab1:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🎯 Raw Data Audit vs. Benchmark References")
+         
+        st.markdown("### Raw Data Audit vs. Benchmark References")
         
         audit_metrics = [
             {"Metric": "Raw orders.csv Rows", "Observed": 13084, "Benchmark": 13084, "Status": "MATCH"},
@@ -652,8 +730,8 @@ elif app_mode == "🔍 Part A: Data Pipeline & SQL Studio":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab2:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🗄️ SQLite Database Schema & Tables (`data/instamart.db`)")
+         
+        st.markdown("### SQLite Database Schema & Tables (`data/instamart.db`)")
         conn = get_db_connection()
         tbl_choice = st.selectbox("Select Table to Inspect", ["orders", "customers", "products"])
         df_sample = pd.read_sql_query(f"SELECT * FROM {tbl_choice} LIMIT 200", conn)
@@ -664,8 +742,8 @@ elif app_mode == "🔍 Part A: Data Pipeline & SQL Studio":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab3:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### ⚡ Live SQL Query Studio")
+         
+        st.markdown("### Live SQL Query Studio")
         st.markdown("Select one of the 7 business intelligence queries or type your own SQL statement against `data/instamart.db`.")
 
         sql_presets = {
@@ -766,18 +844,30 @@ ORDER BY day;"""
                         res_df, x="city", y="revenue", color="category",
                         title="Revenue by City and Category (INR)",
                         barmode="group",
-                        color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706", "#7C3AED"]
+                        color_discrete_sequence=["#38BDF8", "#34D399", "#FB7185", "#FBBF24", "#A78BFA"]
                     )
-                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
+                    fig.update_layout(
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="#0B0F19",
+                        font=dict(color="#F8FAFC", family="Plus Jakarta Sans"),
+                        xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                        yaxis=dict(gridcolor="rgba(255,255,255,0.06)")
+                    )
                     st.plotly_chart(fig, use_container_width=True)
 
                 elif "Q7" in q_preset_name and "cumulative_revenue" in res_df.columns:
                     fig = px.line(
                         res_df, x="day", y="cumulative_revenue",
                         title="Cumulative Operational Revenue (INR)",
-                        color_discrete_sequence=["#2563EB"]
+                        color_discrete_sequence=["#38BDF8"]
                     )
-                    fig.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
+                    fig.update_layout(
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="#0B0F19",
+                        font=dict(color="#F8FAFC", family="Plus Jakarta Sans"),
+                        xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                        yaxis=dict(gridcolor="rgba(255,255,255,0.06)")
+                    )
                     st.plotly_chart(fig, use_container_width=True)
 
             except Exception as e:
@@ -788,22 +878,22 @@ ORDER BY day;"""
 # ==============================================================================
 # MODULE 3: PART B - SEGMENTATION & LAPSE AI
 # ==============================================================================
-elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
+elif app_mode == " Part B: Segmentation & Lapse AI":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-emerald">PART B MODELING</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Customer RFM Clustering & Predictive Lapse AI</h1>
-        <p style="color: #F1F5F9 !important;">Explore 3D RFM behavioral spaces, identify VIP Champions, and predict customer churn using balanced machine learning models without lookahead leakage.</p>
+        <h1>Customer RFM Clustering & Predictive Lapse AI</h1>
+        <p>Explore 3D RFM behavioral spaces, identify VIP Champions, and predict customer churn using balanced machine learning models without lookahead leakage.</p>
     </div>
     """, unsafe_allow_html=True)
 
     df_seg = load_segments()
 
-    tab1, tab2, tab3 = st.tabs(["🧊 3D Isometric RFM Visualizer", "👥 Segment Profiles & Actions", "📉 Lapse ML & Priority Retention"])
+    tab1, tab2, tab3 = st.tabs([" 3D Isometric RFM Visualizer", " Segment Profiles & Actions", " Lapse ML & Priority Retention"])
 
     with tab1:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🧊 3D Isometric Customer Clustering (Recency × Frequency × Monetary)")
+         
+        st.markdown("### 3D Isometric Customer Clustering (Recency × Frequency × Monetary)")
         st.markdown("Rotate and explore the customer behavioral feature space in 3D with high-contrast cluster coloring.")
 
         if not df_seg.empty:
@@ -812,10 +902,10 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
 
             # 3D Scatter Plot with Isometric Perspective
             palette_map = {
-                "High-Value Premium": "#2563EB",
-                "Loyal Power Shoppers": "#059669",
-                "Occasional Low-Spend": "#D97706",
-                "At-Risk / Dormant": "#E11D48"
+                "High-Value Premium": "#38BDF8",
+                "Loyal Power Shoppers": "#34D399",
+                "Occasional Low-Spend": "#FBBF24",
+                "At-Risk / Dormant": "#FB7185"
             }
 
             fig_3d = px.scatter_3d(
@@ -838,12 +928,15 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                     yaxis_title='Frequency (Orders)',
                     zaxis_title='Monetary Spend (INR)',
                     camera=dict(eye=dict(x=1.65, y=1.65, z=1.25)),
-                    bgcolor="#F8FAFC"
+                    bgcolor="#080C14",
+                    xaxis=dict(backgroundcolor="#0F172A", gridcolor="rgba(255,255,255,0.08)", color="#94A3B8"),
+                    yaxis=dict(backgroundcolor="#0F172A", gridcolor="rgba(255,255,255,0.08)", color="#94A3B8"),
+                    zaxis=dict(backgroundcolor="#0F172A", gridcolor="rgba(255,255,255,0.08)", color="#94A3B8")
                 ),
                 margin=dict(l=0, r=0, b=0, t=20),
                 height=560,
-                paper_bgcolor="#FFFFFF",
-                font=dict(color="#0F172A")
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#F8FAFC", family="Plus Jakarta Sans")
             )
             st.plotly_chart(fig_3d, use_container_width=True)
         else:
@@ -851,8 +944,8 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab2:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Customer Segment Profiles & Strategic Recommendations")
+         
+        st.markdown("### Customer Segment Profiles & Strategic Recommendations")
         
         if not df_seg.empty:
             c_col = "segment_id" if "segment_id" in df_seg.columns else "cluster"
@@ -874,30 +967,36 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
                     agg_seg, x="segment_name", y="count", color="segment_name",
                     title="Segment Size Distribution",
                     color_discrete_map={
-                        "High-Value Premium": "#2563EB",
-                        "Loyal Power Shoppers": "#059669",
-                        "Occasional Low-Spend": "#D97706",
-                        "At-Risk / Dormant": "#E11D48"
+                        "High-Value Premium": "#38BDF8",
+                        "Loyal Power Shoppers": "#34D399",
+                        "Occasional Low-Spend": "#FBBF24",
+                        "At-Risk / Dormant": "#FB7185"
                     }
                 )
-                fig_bar.update_layout(paper_bgcolor="#FFFFFF", plot_bgcolor="#F8FAFC", font=dict(color="#0F172A"))
+                fig_bar.update_layout(
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="#0B0F19",
+                    font=dict(color="#F8FAFC", family="Plus Jakarta Sans"),
+                    xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                    yaxis=dict(gridcolor="rgba(255,255,255,0.06)")
+                )
                 st.plotly_chart(fig_bar, use_container_width=True)
 
             with c_p2:
                 st.markdown("""
-                <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 10px; padding: 18px; box-shadow: 4px 4px 0px #0F172A;">
-                    <h4 style="color: #0F172A; margin-top: 0;">🚀 Business Action Playbooks</h4>
-                    <p><strong>👑 High-Value Premium</strong>: Priority VIP concierge, high priority desk, instant escalation.</p>
-                    <p><strong>⚡ Loyal Power Shoppers</strong>: Bulk basket offers, loyalty tier progression, free express delivery.</p>
-                    <p><strong>🛒 Occasional Low-Spend</strong>: Category discovery incentives, personalized introductory offers.</p>
-                    <p><strong>⚠️ At-Risk / Dormant</strong>: Targeted win-back discount coupons, re-engagement alerts.</p>
+                <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 22px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);">
+                    <h4 style="color: #F8FAFC; margin-top: 0; font-size: 1.05rem;"> Strategic Retention & Growth Playbooks</h4>
+                    <p style="margin-bottom: 8px;"><strong style="color: #38BDF8;"> High-Value Premium</strong>: Dedicated VIP concierge desk, instant exception approvals, zero automated holds.</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: #34D399;"> Loyal Power Shoppers</strong>: Dynamic basket size boosters, weekly subscription freebies, priority express routing.</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: #FBBF24;"> Occasional Low-Spend</strong>: Category expansion promos, targeted weekend flash vouchers, engagement surveys.</p>
+                    <p style="margin-bottom: 0;"><strong style="color: #FB7185;"> At-Risk / Dormant</strong>: Win-back recovery offers, friction audit for recent delays, automated re-engagement campaign.</p>
                 </div>
                 """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab3:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 📉 High-Risk Premium Customer Retention Watchlist")
+         
+        st.markdown("### High-Risk Premium Customer Retention Watchlist")
         st.markdown("Top 10 High-Value (`is_premium == True`) test customers predicted at immediate risk of churning:")
         
         df_ret = load_retention_list()
@@ -924,20 +1023,20 @@ elif app_mode == "🎯 Part B: Segmentation & Lapse AI":
 # ==============================================================================
 # MODULE 4: PART C - SAFE TICKET TRIAGE LAB
 # ==============================================================================
-elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
+elif app_mode == " Part C: Safe Ticket Triage Lab":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-rose">PART C PIPELINE</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Support Ticket Privacy Guardrails & Smart Triage</h1>
-        <p style="color: #F1F5F9 !important;">Test real-time regex PII redaction (email, phone, order ID), input token guardrails, and customer-segment priority routing.</p>
+        <h1>Support Ticket Privacy Guardrails & Smart Triage</h1>
+        <p>Test real-time regex PII redaction (email, phone, order ID), input token guardrails, and customer-segment priority routing.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🧪 Live Triage Simulator", "📊 Comparative Evaluation (Zero vs Few-Shot)"])
+    tab1, tab2 = st.tabs([" Live Triage Simulator", " Comparative Evaluation (Zero vs Few-Shot)"])
 
     with tab1:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🧪 Live Ticket Sanitize & Triage Playground")
+         
+        st.markdown("### Live Ticket Sanitize & Triage Playground")
         
         presets = {
             "Select a preset scenario...": "",
@@ -982,9 +1081,9 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
                 total_subs = n_email + n_phone + n_order
                 st.markdown("#### 2. PII Sanitization Transformation")
                 st.markdown(f"""
-                <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 8px; padding: 14px;">
-                    <div><strong>Substitutions Applied:</strong> {n_email} Emails, {n_phone} Phones, {n_order} Order IDs (Total: {total_subs})</div>
-                    <div style="margin-top: 8px; font-family: monospace; color: #1E40AF; font-weight: 600;"><strong>Redacted Prompt:</strong> {redacted}</div>
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 16px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);">
+                    <div style="color: #CBD5E1;"><strong style="color: #F8FAFC;">Substitutions Applied:</strong> {n_email} Emails, {n_phone} Phones, {n_order} Order IDs (Total: {total_subs})</div>
+                    <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; color: #60A5FA; font-weight: 600; font-size: 0.9rem; background: rgba(8, 12, 20, 0.8); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05);"><strong style="color: #94A3B8;">Redacted Prompt:</strong> {redacted}</div>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -1027,8 +1126,8 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab2:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Zero-Shot vs. Few-Shot Benchmark Evaluation")
+         
+        st.markdown("### Zero-Shot vs. Few-Shot Benchmark Evaluation")
         
         comp_data = {
             "Prompt Strategy": ["Zero-Shot Prompt", "Few-Shot Prompt"],
@@ -1048,9 +1147,12 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
         if not df_tri.empty:
             fig_tri = px.pie(
                 df_tri, names="route", title="Production Route Distribution (164 Tickets)",
-                color_discrete_sequence=["#2563EB", "#059669", "#E11D48", "#D97706"]
+                color_discrete_sequence=["#38BDF8", "#34D399", "#FB7185", "#FBBF24"]
             )
-            fig_tri.update_layout(paper_bgcolor="#FFFFFF", font=dict(color="#0F172A"))
+            fig_tri.update_layout(
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#F8FAFC", family="Plus Jakarta Sans")
+            )
             st.plotly_chart(fig_tri, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1058,20 +1160,20 @@ elif app_mode == "🛡️ Part C: Safe Ticket Triage Lab":
 # ==============================================================================
 # MODULE 5: PART D - POLICY RAG & REACT REFUND AGENT
 # ==============================================================================
-elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
+elif app_mode == " Part D: Policy RAG & ReAct Agent":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-dark">PART D AUTONOMY</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Policy Retrieval-Augmented Generation & ReAct Refund Agent</h1>
-        <p style="color: #F1F5F9 !important;">Ground answers across 5 company policy documents, and simulate multi-step ReAct agent decision making with automated SQLite tool calls and state checkpointing.</p>
+        <h1>Policy Retrieval-Augmented Generation & ReAct Refund Agent</h1>
+        <p>Ground answers across 5 company policy documents, and simulate multi-step ReAct agent decision making with automated SQLite tool calls and state checkpointing.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2, tab3 = st.tabs(["📚 Policy RAG Q&A Assistant", "🤖 ReAct Refund Agent Simulator", "🛑 Safety Limits & Resumability"])
+    tab1, tab2, tab3 = st.tabs([" Policy RAG Q&A Assistant", " ReAct Refund Agent Simulator", " Safety Limits & Resumability"])
 
     with tab1:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 📚 Grounded Policy Assistant (15 Chunks, TF-IDF Retrieval)")
+         
+        st.markdown("### Grounded Policy Assistant (15 Chunks, TF-IDF Retrieval)")
         
         bench_questions = [
             "What delivery time makes a completed order eligible for a full refund?",
@@ -1093,7 +1195,7 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
             
             st.markdown("#### Grounded Model Response:")
             st.markdown(f"""
-            <div style="background: #F8FAFC; border: 2px solid #0F172A; border-radius: 8px; padding: 16px; font-weight: 600; color: #0F172A;">
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 18px; font-weight: 500; color: #F8FAFC; line-height: 1.6; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);">
                 {ans_text}
             </div>
             """, unsafe_allow_html=True)
@@ -1105,8 +1207,8 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab2:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🤖 Autonomous ReAct Refund Agent Runner")
+         
+        st.markdown("### Autonomous ReAct Refund Agent Runner")
         
         scenarios_meta = {
             "S1: Late Delivery (ORD-100048, 65 min) -> Full Refund INR 128.25": ("ORD-100048", "S1", "Order ORD-100048 took 65 minutes to arrive and I want my money back."),
@@ -1142,8 +1244,8 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
         st.markdown('</div>', unsafe_allow_html=True)
 
     with tab3:
-        st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-        st.markdown("### 🛑 Safety Limits & Fault-Tolerant Resumability")
+         
+        st.markdown("### Safety Limits & Fault-Tolerant Resumability")
         
         st.markdown("""
         #### 1. Limit Enforcement Demonstration
@@ -1163,17 +1265,17 @@ elif app_mode == "🤖 Part D: Policy RAG & ReAct Agent":
 # ==============================================================================
 # MODULE 6: PROJECT EXECUTION HUB
 # ==============================================================================
-elif app_mode == "⚡ Project Execution Hub":
+elif app_mode == " Project Execution Hub":
     st.markdown("""
     <div class="iso-hero">
         <span class="iso-badge badge-emerald">PIPELINE AUTOMATION</span>
-        <h1 style="color: #FFFFFF !important; text-shadow: 2px 2px 0px #0F172A;">Project Execution & Reproduction Control Hub</h1>
-        <p style="color: #F1F5F9 !important;">Trigger and monitor live script executions for data auditing, cleaning, RFM model training, triage evaluation, and ReAct agent benchmarks.</p>
+        <h1>Project Execution & Reproduction Control Hub</h1>
+        <p>Trigger and monitor live script executions for data auditing, cleaning, RFM model training, triage evaluation, and ReAct agent benchmarks.</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="iso-card">', unsafe_allow_html=True)
-    st.markdown("### 🚀 Execute Pipeline Scripts on Demand")
+     
+    st.markdown("### Execute Pipeline Scripts on Demand")
     st.markdown("Click any button below to trigger the respective script and inspect stdout output in real time.")
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -1219,7 +1321,7 @@ elif app_mode == "⚡ Project Execution Hub":
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("""
-    <div style="text-align: center; color: #475569; font-size: 0.85rem; margin-top: 32px; font-weight: 600;">
-        Instamart Copilot Intelligence Suite • High-Contrast WCAG AAA Theme • Powered by Streamlit, Plotly & Scikit-Learn
+    <div style="text-align: center; color: #64748B; font-size: 0.82rem; margin-top: 36px; font-weight: 600; letter-spacing: 0.04em;">
+        Instamart Sovereign Operations Center • High-Profile Executive Command Suite • WCAG AAA Certified
     </div>
     """, unsafe_allow_html=True)
