@@ -1,6 +1,12 @@
-# Instamart Copilot: Customer Intelligence & Order Analytics
+# Instamart Sovereign: Customer Intelligence & Order Analytics
 
-An end-to-end data auditing, cleaning, relational modeling, and customer intelligence analytics pipeline for Instamart quick-commerce operations across six major Indian metropolitan areas.
+An end-to-end data auditing, cleaning, relational modeling, customer intelligence, and autonomous operations suite for Instamart quick-commerce operations across six major Indian metropolitan areas.
+
+🌐 **Live Prototype**: [https://instamart-copilot-abhinav-kanagasabapathi.streamlit.app/](https://instamart-copilot-abhinav-kanagasabapathi.streamlit.app/)
+
+![Dashboard Overview](assets/images/dashboard_overview.png)
+
+![3D Customer RFM Clustering](assets/images/rfm_3d_clustering.png)
 
 ---
 
