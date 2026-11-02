@@ -655,9 +655,9 @@ if app_mode == " Mission Control & Visual Guide":
         <div class="iso-card">
             <span class="iso-badge badge-emerald">PART B PIPELINE</span>
             <h3>RFM Clustering & Lapse AI</h3>
-            <p>Builds customer behavioral snapshot at 2025-10-01 across 1,175 customers. Fits K-Means (K=4, inertia 743.1, silhouette 0.526) with 2D PCA projection, and trains leakage-free lapse models.</p>
+            <p>Builds customer behavioral snapshot at 2025-10-01 across 1,175 customers. Fits K-Means (K=4, inertia 3.2, silhouette 0.794) with 2D PCA projection, and trains leakage-free lapse models.</p>
             <ul>
-                <li><strong>Premium Champions</strong>: 138 accounts spending average INR 7,129.70.</li>
+                <li><strong>Premium Champions</strong>: 947 accounts spending average INR 3,100.58.</li>
                 <li><strong>Class Balancing</strong>: Boosts test recall by +15.7pp (from 0.6517 to 0.8090).</li>
                 <li><strong>Retention Priority</strong>: Top 10 high-value churn targets flagged.</li>
             </ul>
@@ -903,9 +903,9 @@ elif app_mode == " Part B: Segmentation & Lapse AI":
             # 3D Scatter Plot with Isometric Perspective
             palette_map = {
                 "High-Value Premium": "#38BDF8",
-                "Loyal Power Shoppers": "#34D399",
                 "Occasional Low-Spend": "#FBBF24",
-                "At-Risk / Dormant": "#FB7185"
+                "At-Risk / Inactive": "#FB923C",
+                "Dormant Single-Order": "#FB7185"
             }
 
             fig_3d = px.scatter_3d(
@@ -968,9 +968,9 @@ elif app_mode == " Part B: Segmentation & Lapse AI":
                     title="Segment Size Distribution",
                     color_discrete_map={
                         "High-Value Premium": "#38BDF8",
-                        "Loyal Power Shoppers": "#34D399",
                         "Occasional Low-Spend": "#FBBF24",
-                        "At-Risk / Dormant": "#FB7185"
+                        "At-Risk / Inactive": "#FB923C",
+                        "Dormant Single-Order": "#FB7185"
                     }
                 )
                 fig_bar.update_layout(
@@ -987,9 +987,9 @@ elif app_mode == " Part B: Segmentation & Lapse AI":
                 <div style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 22px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);">
                     <h4 style="color: #F8FAFC; margin-top: 0; font-size: 1.05rem;"> Strategic Retention & Growth Playbooks</h4>
                     <p style="margin-bottom: 8px;"><strong style="color: #38BDF8;"> High-Value Premium</strong>: Dedicated VIP concierge desk, instant exception approvals, zero automated holds.</p>
-                    <p style="margin-bottom: 8px;"><strong style="color: #34D399;"> Loyal Power Shoppers</strong>: Dynamic basket size boosters, weekly subscription freebies, priority express routing.</p>
-                    <p style="margin-bottom: 8px;"><strong style="color: #FBBF24;"> Occasional Low-Spend</strong>: Category expansion promos, targeted weekend flash vouchers, engagement surveys.</p>
-                    <p style="margin-bottom: 0;"><strong style="color: #FB7185;"> At-Risk / Dormant</strong>: Win-back recovery offers, friction audit for recent delays, automated re-engagement campaign.</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: #FBBF24;"> Occasional Low-Spend</strong>: Targeted weekend basket threshold promotions to build purchase habit.</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: #FB923C;"> At-Risk / Inactive</strong>: Automated push re-engagement, personalized category discounts, and app notification nudge.</p>
+                    <p style="margin-bottom: 0;"><strong style="color: #FB7185;"> Dormant Single-Order</strong>: Deep reactivating voucher (INR 150 off) and win-back survey outreach.</p>
                 </div>
                 """, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)

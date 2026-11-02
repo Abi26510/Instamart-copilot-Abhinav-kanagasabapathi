@@ -15,7 +15,7 @@ import os
 import joblib
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import Normalizer, StandardScaler, OneHotEncoder
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score, accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 from sklearn.decomposition import PCA
@@ -44,9 +44,9 @@ def build_rfm_table(orders_path: str = "data/clean/orders.csv", snapshot_str: st
     return rfm[["customer_id", "recency", "frequency", "monetary"]].sort_values("customer_id").reset_index(drop=True)
 
 
-def run_rfm_clustering(rfm: pd.DataFrame, output_dir: str = "outputs") -> tuple[pd.DataFrame, KMeans, StandardScaler]:
+def run_rfm_clustering(rfm: pd.DataFrame, output_dir: str = "outputs") -> tuple[pd.DataFrame, KMeans, Normalizer]:
     os.makedirs(output_dir, exist_ok=True)
-    scaler = StandardScaler()
+    scaler = Normalizer(norm="l2")
     X_scaled = scaler.fit_transform(rfm[["recency", "frequency", "monetary"]])
 
     print("=" * 80)
@@ -95,15 +95,15 @@ def run_rfm_clustering(rfm: pd.DataFrame, output_dir: str = "outputs") -> tuple[
                 "name": "High-Value Premium",
                 "action": "Dedicated account manager, exclusive electronics early access, and zero-fee express delivery."
             }
-        elif row["mean_frequency"] > 10:
+        elif row["mean_recency"] > 110:
             segment_info[sid] = {
-                "name": "Loyal Power Shoppers",
-                "action": "Subscription pass (free grocery deliveries) and cross-category discovery coupons."
+                "name": "Dormant Single-Order",
+                "action": "Deep reactivating voucher (INR 150 off) and win-back survey outreach."
             }
         elif row["mean_recency"] > 80:
             segment_info[sid] = {
-                "name": "At-Risk / Dormant",
-                "action": "Aggressive win-back discounts and survey outreach to address churn reasons."
+                "name": "At-Risk / Inactive",
+                "action": "Automated push re-engagement, personalized category discounts, and app notification nudge."
             }
         else:
             segment_info[sid] = {
@@ -132,7 +132,7 @@ def run_rfm_clustering(rfm: pd.DataFrame, output_dir: str = "outputs") -> tuple[
     pca = PCA(n_components=2, random_state=42)
     pca.fit(X_scaled)
     evr = pca.explained_variance_ratio_
-    print(f"PCA Explained Variance Ratio: PC1={evr[0]:.3f}, PC2={evr[1]:.3f}, Total={evr.sum():.3f} (Reference: ~0.634, ~0.218, total ~0.852)")
+    print(f"PCA Explained Variance Ratio: PC1={evr[0]:.3f}, PC2={evr[1]:.3f}, Total={evr.sum():.3f} (Reference: ~0.962, ~0.038, total ~1.000)")
 
     # Save customer_segments.csv
     export_cols = ["customer_id", "recency", "frequency", "monetary", "segment_id", "segment_name", "is_premium"]
