@@ -36,7 +36,6 @@ An institutional quick-commerce operations suite, customer intelligence platform
 - [8. Part B: Customer Lapse Prediction & Modeling](#8-part-b-customer-lapse-prediction--modeling)
 - [9. Part C: Support Ticket Privacy Guardrails & Smart Triage](#9-part-c-support-ticket-privacy-guardrails--smart-triage)
 - [10. Part D: Policy RAG & Autonomous ReAct Refund Agent](#10-part-d-policy-rag--autonomous-react-refund-agent)
-- [11. Deployment Guide](#11-deployment-guide)
 
 ---
 
@@ -764,37 +763,3 @@ The ReAct (Reasoning + Acting) architecture interleaves thought, tool execution,
 In quick-commerce refund triage, ReAct proves vastly superior in handling exceptions and uncertainty. Operational workflows frequently encounter terminal preconditions—such as missing orders (Scenario S6: NOT_FOUND) or non-refundable statuses (Scenario S5: cancelled order DENIED). ReAct opportunistically terminates immediately upon observing these invalid states, taking only 2 tool calls (96 tokens) for S6 and 3 calls (373 tokens) for S5. In contrast, Plan-and-Execute would formulate an entire workflow upfront—including database querying, policy retrieval, refund calculation, and ledger logging. When step 1 discovers that the order does not exist or was cancelled, the pre-computed downstream plan collapses, forcing costly replanning cycles and wasting substantial context tokens.
 
 However, ReAct's flexibility introduces vulnerability to reasoning loops when faced with ambiguous requests or persistent tool repetitions (as observed in Scenario S7, which consumed 3,072 tokens before hitting MAX_ITERATIONS). Plan-and-Execute offers more predictable global optimization and parallel tool invocation for static, deterministic pipelines. For dynamic customer operations where operational ground truth must dictate policy compliance, ReAct provides the essential reactivity required to prevent premature or erroneous refund disbursements.
-
----
-
-## 11. Deployment Guide
-
-### Option 1: Streamlit Community Cloud (Recommended & Free)
-1. Fork or push this repository to GitHub.
-2. Sign in to [share.streamlit.io](https://share.streamlit.io/) with your GitHub account.
-3. Click **"New app"**, select this repository (`main` branch), and set the main file path to `app.py`.
-4. Click **"Deploy!"**. Streamlit Cloud automatically installs dependencies from `requirements.txt` and provisions an HTTPS URL.
-
-### Option 2: Docker Container Deployment
-A lightweight Docker container can be built and run on any cloud platform (AWS ECS, GCP Cloud Run, DigitalOcean):
-
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8501
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-```
-
-```bash
-docker build -t instamart-sovereign:latest .
-docker run -d -p 8501:8501 --name instamart-app instamart-sovereign:latest
-```
-
-### Option 3: Direct Server / Production CLI
-```bash
-streamlit run app.py --server.port 8501 --server.address 0.0.0.0
-```
